@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 from docling.datamodel.base_models import InputFormat
-from docling.document_converter import DocumentConverter
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,6 +22,7 @@ def parse_pdf(converter: DocumentConverter, pdf_path: Path) -> None:
     doc = result.document
 
     md_path = OUTPUT_DIR / f"{pdf_path.stem}.md"
+    # for easier human review
     md_path.write_text(doc.export_to_markdown(), encoding="utf-8")
 
     json_path = OUTPUT_DIR / f"{pdf_path.stem}.json"
@@ -43,7 +45,12 @@ def main() -> int:
         return 0
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    converter = DocumentConverter(allowed_formats=[InputFormat.PDF])
+    options = PdfPipelineOptions()
+    options.do_ocr = False
+    converter = DocumentConverter(
+        allowed_formats=[InputFormat.PDF],
+        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=options)},
+    )
 
     total = len(pdf_files)
     failures = 0

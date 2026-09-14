@@ -1,7 +1,11 @@
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+FROM python:3.12
 
-WORKDIR /app
-COPY . .
-RUN uv pip install --system ./app
+RUN pip install --no-cache-dir uv
 
-CMD ["python", "-m", "app.main"]
+WORKDIR /app/app
+COPY app /app/app
+RUN uv sync --frozen
+
+ENV PYTHONPATH=/app/app/src
+
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
