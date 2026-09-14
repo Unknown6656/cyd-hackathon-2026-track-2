@@ -8,8 +8,6 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
 from .tools import (
-    calculate_percentage_change,
-    calculate_result,
     get_ekn_description,
 )
 
@@ -74,48 +72,3 @@ def get_ekn_description_tool(
     Fetches the text description of a good given its EKN identifier.
     """
     return get_ekn_description(ekn)
-
-# ---------------------------------------------------------------------------
-# Agent 1
-# ---------------------------------------------------------------------------
-
-calculation_agent = Agent(
-    build_model(),
-    deps_type=AgentDependencies,
-    instructions="""
-    You are a calculation assistant.
-
-    Your job is to answer questions that require numerical calculations.
-
-    Use your available calculation tools whenever an exact calculation
-    is required. Do not perform calculations yourself when a tool exists
-    for the operation.
-
-    Explain the result clearly and include the relevant units or context
-    when they are provided by the user.
-    """,
-)
-
-
-@calculation_agent.tool
-def calculate_result_tool(
-    ctx: RunContext[AgentDependencies],
-    value: float,
-    multiplier: float,
-) -> float:
-    """
-    Calculate a value using the application's calculation function.
-    """
-    return calculate_result(value, multiplier)
-
-
-@calculation_agent.tool
-def calculate_percentage_change_tool(
-    ctx: RunContext[AgentDependencies],
-    old_value: float,
-    new_value: float,
-) -> float:
-    """
-    Calculate percentage change using the application's calculation function.
-    """
-    return calculate_percentage_change(old_value, new_value)
