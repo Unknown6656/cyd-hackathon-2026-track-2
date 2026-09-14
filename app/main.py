@@ -4,10 +4,10 @@ See README.md for the full contract (request blocks, response shape, citations).
 """
 
 import os
-from typing import Any
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from models import AdviseRequest, AdviseResponse
+
 
 app = FastAPI(title="Track 2 export control advisor")
 
@@ -23,50 +23,27 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 MODEL = os.environ.get("MODEL")
 
 
-class Item(BaseModel):
-    description: str | None = None
-    # Free-form: any keys, any units, no guarantee a given parameter is present.
-    specifications: dict[str, Any] | None = None
 
 
-class Transaction(BaseModel):
-    consignee: str | None = None
-    end_user: str | None = None
-    intermediaries: list[str] | None = None
-    destination: str | None = None
-    stated_end_use: str | None = None
-    routing: list[str] | None = None
-    value_chf: float | None = None
-
-
-class Document(BaseModel):
-    type: str | None = None
-    text: str
-
-
-class AdviseRequest(BaseModel):
-    """At least one block is present. query / item / transaction appear at most
-    once; documents is a list. When several are present they are related: the
-    item is the product in the transaction and the query is scoped to both."""
-
-    query: str | None = None
-    item: Item | None = None
-    transaction: Transaction | None = None
-    documents: list[Document] | None = None
 
 
 @app.post("/advise")
-def advise(req: AdviseRequest) -> dict:
+def advise(req: AdviseRequest) -> AdviseResponse:
     # TODO: implement your advisor.
     
 
-    response: dict[str, Any] = {"refer_to_authority": False}
+    response: AdviseResponse = AdviseResponse(
+        refer_to_authority=False,
+        query=None,
+        classification=None,
+        transaction=None,
+    )
 
     if req.query is not None:
-        response["query"] = {"answer": "TODO: not implemented", "citations": []}
+        response.query = {"answer": "TODO: not implemented", "citations": []}
 
     if req.item is not None:
-        response["classification"] = {
+        response.classification = {
             "controlled": False,
             "regime": "none",          # war_materiel | specific_military | dual_use | none
             "entries": [],
@@ -75,7 +52,7 @@ def advise(req: AdviseRequest) -> dict:
         }
 
     if req.transaction is not None:
-        response["transaction"] = {
+        response.transaction = {
             # NO_LICENCE_REQUIRED | LICENCE_REQUIRED | PROHIBITED | REFER_TO_AUTHORITY
             "verdict": "REFER_TO_AUTHORITY",
             "authority": None,
