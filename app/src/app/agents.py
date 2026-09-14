@@ -8,7 +8,6 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
 from .tools import (
-    calculate_average,
     calculate_percentage_change,
     calculate_result,
     get_ekn_description,
@@ -120,37 +119,3 @@ def calculate_percentage_change_tool(
     Calculate percentage change using the application's calculation function.
     """
     return calculate_percentage_change(old_value, new_value)
-
-
-# ---------------------------------------------------------------------------
-# Agent 2
-# ---------------------------------------------------------------------------
-
-analysis_agent = Agent(
-    build_model(),
-    deps_type=AgentDependencies,
-    instructions="""
-    You are a data analysis assistant.
-
-    Your job is to analyze collections of numerical data.
-
-    Use the tools available to you for calculations rather than estimating
-    or manually calculating results.
-
-    Explain what the calculated result means in the context of the user's
-    question. Do not claim to have performed analysis that you did not
-    perform.
-    """,
-)
-
-
-@analysis_agent.tool
-def calculate_average_tool(
-    ctx: RunContext[AgentDependencies],
-    values: list[float],
-) -> float:
-    """
-    Calculate the average of a list of values.
-    """
-    return calculate_average(values)
-
