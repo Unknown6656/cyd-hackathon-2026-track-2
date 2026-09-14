@@ -1,0 +1,912 @@
+{
+  "task": "Track 2 — example test data (war_materiel) for POST /advise classification",
+  "notes": [
+    "Precedence: KMV Annex 1 (war materiel list, KM 1-22) always prevails. An item that is war materiel is NOT a specific military good under GKV Annex 3.",
+    "KM numbers mirror ML numbers but the KM list is a subset: KM 14, 15, 18 and 22 contain no entries, so e.g. ML15 (night vision / thermal) items stay `specific_military` under GKV Annex 3.",
+    "KM 1 covers only hand and pistol firearms of any calibre (Hand- und Faustfeuerwaffen); other weapons (rifles, machine guns, mortars, cannons) are KM 2.",
+    "Each entry's `request` is a ready-to-send /advise payload (item block only).",
+    "`expected` is the ground truth for scoring: controlled flag, regime, control list entries.",
+    "Entries cite GKV Annex 2 (dual-use list), e.g. '3A001.a.5.a' is shorthand for the specific paragraph.",
+    "specifications are deliberately free-form (varied keys/units), matching the API contract.",
+    "Several not-controlled items sit exactly on the threshold boundary (thresholds are strict '>' unless stated otherwise).",
+    "The `war_materiel` array covers KMV Annex 1 (KM 1-22); expected regime is `war_materiel`."
+  ],
+  "items": [
+    {
+      "id": "W-01",
+      "request": {
+        "item": {
+          "description": "9 mm fully automatic machine pistol with 33-round drum magazine, military issue",
+          "specifications": {
+            "calibre": "9x19 mm",
+            "action": "fully automatic",
+            "magazine_capacity": 33,
+            "role": "military sidearm"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM1"
+        ],
+        "entry": "KM1",
+        "note": "hand/pistol firearm of any calibre (Faustfeuerwaffe), described by KM1"
+      }
+    },
+    {
+      "id": "W-02",
+      "request": {
+        "item": {
+          "description": "12.7x108 mm heavy machine gun, water-cooled, with vehicle mount",
+          "specifications": {
+            "calibre": "12.7x108 mm",
+            "type": "heavy machine gun",
+            "cooling": "water",
+            "mount": "vehicle ring mount"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM2"
+        ],
+        "entry": "KM2",
+        "note": "machine gun is a weapon of any calibre but not a hand/pistol firearm, so KM2 (not KM1)"
+      }
+    },
+    {
+      "id": "W-03",
+      "request": {
+        "item": {
+          "description": "81 mm light mortar with 30-round quick-change tube and firing base",
+          "specifications": {
+            "calibre": "81 mm",
+            "type": "mortar",
+            "range": "6000 m",
+            "tube": "quick-change"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM2"
+        ],
+        "entry": "KM2",
+        "note": "Mörser (mortar), explicitly listed in KM2.a"
+      }
+    },
+    {
+      "id": "W-04",
+      "request": {
+        "item": {
+          "description": "100 rounds 12.7x108 mm armour-piercing incendiary ammunition, boxed",
+          "specifications": {
+            "calibre": "12.7x108 mm",
+            "type": "API",
+            "quantity": 100
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM3"
+        ],
+        "entry": "KM3",
+        "note": "ammunition for a KM2 weapon, described by KM3"
+      }
+    },
+    {
+      "id": "W-05",
+      "request": {
+        "item": {
+          "description": "moored naval mine with contact exploder, 200 kg warhead",
+          "specifications": {
+            "type": "mine",
+            "warhead": "200 kg HE",
+            "fuzing": "contact",
+            "deployment": "moored"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM4"
+        ],
+        "entry": "KM4",
+        "note": "Minen (mines) are explicitly listed in KM4"
+      }
+    },
+    {
+      "id": "W-06",
+      "request": {
+        "item": {
+          "description": "land-attack cruise missile, turbojet-powered, inertial/terrain-contour navigation",
+          "specifications": {
+            "type": "cruise missile",
+            "propulsion": "turbojet",
+            "range": "250 km",
+            "warhead": "250 kg HE",
+            "guidance": "INS + terrain contour matching"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM4"
+        ],
+        "entry": "KM4",
+        "note": "Rakete/Flugkörper for combat, described by KM4"
+      }
+    },
+    {
+      "id": "W-07",
+      "request": {
+        "item": {
+          "description": "digital bomb-aiming computer for manned fighter aircraft, computes release point and trajectory",
+          "specifications": {
+            "type": "bomb-aiming computer",
+            "interface": "aircraft fire-control bus",
+            "function": "release point, trajectory, fuze setting"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM5"
+        ],
+        "entry": "KM5",
+        "note": "Bombenzielrechner (bomb-aiming computer), explicitly listed in KM5.a"
+      }
+    },
+    {
+      "id": "W-08",
+      "request": {
+        "item": {
+          "description": "sensor integration and data-fusion equipment for a naval combat management system",
+          "specifications": {
+            "type": "data fusion / sensor integration",
+            "sensors": "radar, ESM, IFF",
+            "output": "common operational picture, weapon assignment"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM5"
+        ],
+        "entry": "KM5",
+        "note": "Ortungs-/Datenverknüpfungsvorrichtungen (data fusion) and sensor-integration equipment, explicitly listed in KM5.b"
+      }
+    },
+    {
+      "id": "W-09",
+      "request": {
+        "item": {
+          "description": "armoured recovery vehicle, tracked, with 15 t crane and winch, for main battle tank recovery",
+          "specifications": {
+            "type": "armoured recovery vehicle",
+            "tracked": true,
+            "crane": "15 t",
+            "winch": "50 t",
+            "armour": "level of MBT hull"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM6"
+        ],
+        "entry": "KM6",
+        "note": "Entpannungs- und Bergungspanzer (recovery tanks) are explicitly included in KM6 note 1.a"
+      }
+    },
+    {
+      "id": "W-10",
+      "request": {
+        "item": {
+          "description": "CN (o-chlorobenzylidenmalononitril, CAS 532-27-4) riot-control agent, 1 kg canisters",
+          "specifications": {
+            "agent": "CN",
+            "cas": "532-27-4",
+            "quantity": "10 x 1 kg",
+            "delivery": "canister, vehicle-mounted thrower"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM7"
+        ],
+        "entry": "KM7",
+        "note": "CN is explicitly listed in KM7; individually packaged self-defence aerosols would be excluded, but bulk canisters for a vehicle-mounted thrower are not"
+      }
+    },
+    {
+      "id": "W-11",
+      "request": {
+        "item": {
+          "description": "UN 1.1 composite solid rocket propellant, aluminium-containing, for solid rocket motors",
+          "specifications": {
+            "un_class": "1.1",
+            "composition": "APb/HTPB composite",
+            "theoretical_specific_impulse": "280 s (aluminium-containing)"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM8"
+        ],
+        "entry": "KM8",
+        "note": "UN 1.1 solid propellant with specific impulse 280 s > 270 s for aluminium-containing mixtures, described by KM8.a.3"
+      }
+    },
+    {
+      "id": "W-12",
+      "request": {
+        "item": {
+          "description": "diesel engine particularly designed for submarine installation",
+          "specifications": {
+            "type": "diesel engine",
+            "designed_for": "submarine",
+            "power": "2.0 MW (2700 PS)",
+            "speed": "750 rpm"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM9"
+        ],
+        "entry": "KM9",
+        "note": "submarine diesel engine with power >= 1.12 MW (1500 PS) and speed >= 700 rpm, meeting both parameters of KM9.b.1"
+      }
+    },
+    {
+      "id": "W-13",
+      "request": {
+        "item": {
+          "description": "decommissioned corvette converted for civil search-and-rescue use, hull in non-operational condition",
+          "specifications": {
+            "type": "warship",
+            "displacement": "1400 t",
+            "status": "decommissioned, hull repair condition",
+            "conversion": "civil SAR (completed)"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM9"
+        ],
+        "entry": "KM9",
+        "note": "KM9.a captures ships particularly constructed/modified for attack or defence even if converted for non-military purposes and regardless of repair state or operability — the civil conversion does not take it out of the list"
+      }
+    },
+    {
+      "id": "W-14",
+      "request": {
+        "item": {
+          "description": "turboshaft engine, 2500 kW, particularly designed for armed attack helicopters",
+          "specifications": {
+            "type": "turboshaft",
+            "power": "2500 kW",
+            "designed_for": "armed attack helicopter",
+            "shafts": "2"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM10"
+        ],
+        "entry": "KM10",
+        "note": "engine for an aircraft of KM10.a (combat helicopter), described by KM10.c; not civil-type-certified"
+      }
+    },
+    {
+      "id": "W-15",
+      "request": {
+        "item": {
+          "description": "ground control station and launch equipment for a remotely piloted combat aircraft (RPV)",
+          "specifications": {
+            "type": "ground control station",
+            "for": "armed RPV",
+            "launch": "truck-mounted catapult",
+            "functions": "command and control, target designation"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM10"
+        ],
+        "entry": "KM10",
+        "note": "Startgeräte, unterstützende Bodengeräte und zugehörige Ausrüstung for a combat RPV, explicitly included in KM10.d (the exclusion covers reconnaissance drones only)"
+      }
+    },
+    {
+      "id": "W-16",
+      "request": {
+        "item": {
+          "description": "ship-mounted acoustic decoy system for torpedo countermeasures, generates false contact signals",
+          "specifications": {
+            "type": "underwater countermeasure",
+            "function": "acoustic decoy / torpedo countermeasure",
+            "launch": "tube, 6 launches",
+            "signal": "active false contact"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM11"
+        ],
+        "entry": "KM11",
+        "note": "Ausrüstung für Unterwassergegenmassnahmen (acoustic deception), explicitly included in KM11 note 1.b"
+      }
+    },
+    {
+      "id": "W-17",
+      "request": {
+        "item": {
+          "description": "electromagnetic launch drive system, capable of accelerating a 1 g projectile to 2 km/s, for a high-kinetic-energy weapon",
+          "specifications": {
+            "type": "launch drive",
+            "drive": "electromagnetic",
+            "mass": "1 g",
+            "velocity": "2 km/s",
+            "mode": "single shot / rapid fire"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM12"
+        ],
+        "entry": "KM12",
+        "note": "Startantriebssystem accelerating a mass > 0.1 g to a velocity > 1.6 km/s, particularly designed for an HKE weapon system — KM12 note 1.a"
+      }
+    },
+    {
+      "id": "W-18",
+      "request": {
+        "item": {
+          "description": "explosive-reactive armour (ERA) tiles, 50 mm threat protection, for tank turret and bustle",
+          "specifications": {
+            "type": "ERA tile",
+            "protection": "50 mm HEAT threat",
+            "material": "specially designed metallic/non-metallic construction",
+            "quantity": 240
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM13"
+        ],
+        "entry": "KM13",
+        "note": "specially constructed constructions/materials to render military systems bullet-proof; ERA material is explicitly included in the KM13.b note"
+      }
+    },
+    {
+      "id": "W-19",
+      "request": {
+        "item": {
+          "description": "forged barrel tube, 105 mm bore, 42CrMo4 steel, geometry identical to a tank gun barrel",
+          "specifications": {
+            "type": "forging (unworked)",
+            "bore": "105 mm",
+            "material": "42CrMo4",
+            "geometry": "matches 105 mm tank gun barrel"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM16"
+        ],
+        "entry": "KM16",
+        "note": "Schmiedestück (forging) whose use in a controlled good (KM2 tank gun) is determinable from material composition and geometry, described by KM16"
+      }
+    },
+    {
+      "id": "W-20",
+      "request": {
+        "item": {
+          "description": "unmanned ground combat robot with manipulator arm, particularly designed for breaching and assault missions",
+          "specifications": {
+            "type": "unmanned ground robot",
+            "manipulator": "6-axis arm, 15 kg payload",
+            "designed_for": "combat breaching / assault",
+            "mobility": "tracked"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM17"
+        ],
+        "entry": "KM17",
+        "note": "robot particularly designed for combat or warfare purposes, described by KM17.a"
+      }
+    },
+    {
+      "id": "M-01",
+      "request": {
+        "item": {
+          "description": "5.56x45 NATO intermediate-calibre assault rifle with 30-round magazine and pistol grip",
+          "specifications": {
+            "calibre": "5.56x45 mm",
+            "action": "select-fire",
+            "barrel_length": "508 mm",
+            "magazine_capacity": 30
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM2"
+        ],
+        "entry": "KM2",
+        "note": "assault rifle is a weapon of any calibre other than hand/pistol firearms, described by KM2 (KM1 covers only Hand- und Faustfeuerwaffen); KMV Annex 1 prevails over GKV Annex 3 ML1"
+      }
+    },
+    {
+      "id": "M-02",
+      "request": {
+        "item": {
+          "description": "9 mm semi-automatic service pistol with integrated suppressor and folding sights",
+          "specifications": {
+            "calibre": "9x19 mm",
+            "action": "semi-automatic",
+            "suppressor": "integrated, 85 dB reduction"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM1"
+        ],
+        "entry": "KM1",
+        "note": "Faustfeuerwaffe (pistol), described by KM1 regardless of calibre; KMV Annex 1 prevails over GKV Annex 3 ML1"
+      }
+    },
+    {
+      "id": "M-03",
+      "request": {
+        "item": {
+          "description": "120 mm smoothbore tank gun with thermal jacket and muzzle brake, for main battle tanks",
+          "specifications": {
+            "calibre": "120 mm",
+            "bore": "smoothbore",
+            "recoil_system": "hydropneumatic",
+            "muzzle_velocity": "1730 m/s APFSDS"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM2"
+        ],
+        "entry": "KM2",
+        "note": "tank gun (Kanone), described by KM2.a; KMV Annex 1 prevails over GKV Annex 3 ML2"
+      }
+    },
+    {
+      "id": "M-04",
+      "request": {
+        "item": {
+          "description": "shoulder-fired anti-tank weapon with tandem-charge HEAT warhead and laser range finder",
+          "specifications": {
+            "type": "anti-tank weapon",
+            "warhead": "tandem-charge HEAT",
+            "range": "800 m",
+            "launcher": "reusable"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM2"
+        ],
+        "entry": "KM2",
+        "note": "anti-tank weapon (Panzerabwehrwaffe), described by KM2.a; KMV Annex 1 prevails over GKV Annex 3 ML2"
+      }
+    },
+    {
+      "id": "M-05",
+      "request": {
+        "item": {
+          "description": "155 mm 52-calibre high-explosive shell for towed and self-propelled artillery, with proximity fuze",
+          "specifications": {
+            "calibre": "155 mm",
+            "filler": "HE, 9 kg",
+            "fuze": "proximity, M730 equivalent"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM3"
+        ],
+        "entry": "KM3",
+        "note": "ammunition for a KM2 weapon; the proximity fuze is a particularly designed component (Sicherungseinrichtung/Zünder) under KM3 note 1.b; KMV Annex 1 prevails over GKV Annex 3 ML3"
+      }
+    },
+    {
+      "id": "M-06",
+      "request": {
+        "item": {
+          "description": "250 kg general-purpose high-explosive aerial bomb with inertial guidance kit",
+          "specifications": {
+            "mass": "250 kg",
+            "filler": "HE",
+            "guidance": "INS guidance kit"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM4"
+        ],
+        "entry": "KM4",
+        "note": "Bomben, particularly designed for combat, described by KM4; KMV Annex 1 prevails over GKV Annex 3 ML4"
+      }
+    },
+    {
+      "id": "M-07",
+      "request": {
+        "item": {
+          "description": "man-portable anti-tank guided missile with image-infrared homing guidance",
+          "specifications": {
+            "type": "missile",
+            "guidance": "image-IR homing",
+            "warhead": "HEAT, penetration 700 mm RHA",
+            "range": "5000 m"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM4"
+        ],
+        "entry": "KM4",
+        "note": "Flugkörper (missile) for combat, described by KM4; KMV Annex 1 prevails over GKV Annex 3 ML4"
+      }
+    },
+    {
+      "id": "M-08",
+      "request": {
+        "item": {
+          "description": "integrated fire-control system for naval main gun with target-tracking radar and ballistic computer",
+          "specifications": {
+            "type": "fire-control system",
+            "sensors": "target-tracking radar, stereo TV",
+            "ballistic_computer": "yes",
+            "weapon_mounted": "naval 127 mm gun"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM5"
+        ],
+        "entry": "KM5",
+        "note": "Waffensteuersystem (fire-control system) for a weapon, described by KM5.a; KMV Annex 1 prevails over GKV Annex 3 ML5"
+      }
+    },
+    {
+      "id": "M-09",
+      "request": {
+        "item": {
+          "description": "thermal-imaging weapon sight for anti-tank guided missile, with laser rangefinder and gun-lay data bus",
+          "specifications": {
+            "type": "weapon sight",
+            "thermal_imaging": "uncooled 384x288 microbolometer",
+            "laser_rangefinder": "yes, 100-5000 m",
+            "interface": "ATGM fire-control bus"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM5"
+        ],
+        "entry": "KM5",
+        "note": "Waffenzielgerät (weapon sight) for an ATGM, described by KM5.a; this is fire-control equipment for a weapon, not an ML15/KM15 night-vision device (KM15 is empty, so ML15 items would stay GKV Annex 3)"
+      }
+    },
+    {
+      "id": "M-10",
+      "request": {
+        "item": {
+          "description": "main battle tank with 120 mm smoothbore gun, composite and reactive armour, and autoloader",
+          "specifications": {
+            "type": "main battle tank",
+            "weight": "60 t",
+            "armour": "composite + ERA",
+            "propulsion": "1500 kW diesel",
+            "gun": "120 mm smoothbore"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM6"
+        ],
+        "entry": "KM6",
+        "note": "Panzerfahrzeug (armoured vehicle) designed for combat, described by KM6 note 1.a; KMV Annex 1 prevails over GKV Annex 3 ML6"
+      }
+    },
+    {
+      "id": "M-11",
+      "request": {
+        "item": {
+          "description": "CS (2-chlorobenzylidene malononitrile) riot-control agent in 5 l canister, with vehicle-mounted spray system",
+          "specifications": {
+            "agent": "CS",
+            "quantity": "5 l",
+            "delivery": "vehicle-mounted spray"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM7"
+        ],
+        "entry": "KM7",
+        "note": "CS (o-chlorobenzylidenmalodinitril) is explicitly listed in KM7 as a Reizstoff to control riots; KMV Annex 1 prevails over GKV Annex 3 ML7"
+      }
+    },
+    {
+      "id": "M-12",
+      "request": {
+        "item": {
+          "description": "533 mm heavyweight torpedo with acoustic passive/active homing warhead for destroyers",
+          "specifications": {
+            "diameter": "533 mm",
+            "warhead": "HE, 320 kg",
+            "homing": "acoustic passive/active",
+            "range": "40 km"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM4"
+        ],
+        "entry": "KM4",
+        "note": "Torpedos are listed under KM4 (Bomben, Torpedos, Raketen, Flugkörper), not under KM9 (Kriegsschiffe); KMV Annex 1 prevails over GKV Annex 3 ML9"
+      }
+    },
+    {
+      "id": "M-13",
+      "request": {
+        "item": {
+          "description": "armed military UAV, twin-engine, with guided missile launch capability and terrain-following radar",
+          "specifications": {
+            "type": "UAV",
+            "wingspan": "14 m",
+            "payload": "2 guided missiles",
+            "radar": "terrain-following",
+            "endurance": "40 h"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM10"
+        ],
+        "entry": "KM10",
+        "note": "unmanned aircraft particularly designed for combat (carries guided weapons), described by KM10.d; KMV Annex 1 prevails over GKV Annex 3 ML10. (Note: KM10.d excludes reconnaissance drones only — this one is weaponised.)"
+      }
+    },
+    {
+      "id": "M-14",
+      "request": {
+        "item": {
+          "description": "X-band surveillance radar, particularly designed for an air-defence system, with moving-target indication",
+          "specifications": {
+            "type": "radar",
+            "band": "X",
+            "range": "460 km",
+            "mti": true,
+            "antenna": "rotating panel, 11 m",
+            "intended_use": "air defence"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM11"
+        ],
+        "entry": "KM11",
+        "note": "electronic equipment particularly designed for combat (air-defence surveillance radar), described by KM11; KMV Annex 1 prevails over GKV Annex 3 ML11"
+      }
+    },
+    {
+      "id": "M-15",
+      "request": {
+        "item": {
+          "description": "ground-based electronic warfare jamming system for radar and C-band communications",
+          "specifications": {
+            "type": "electronic warfare",
+            "jammed_bands": "radar 9-12 GHz, comms 3-4 GHz",
+            "power": "5 kW per band",
+            "platform": "truck-mounted"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM11"
+        ],
+        "entry": "KM11",
+        "note": "ECM (jamming) equipment is explicitly included in KM11 note 1.a; KMV Annex 1 prevails over GKV Annex 3 ML11"
+      }
+    },
+    {
+      "id": "M-16",
+      "request": {
+        "item": {
+          "description": "electromagnetic rail gun prototype, 30 MJ railgun with cryogenic power storage, for naval use",
+          "specifications": {
+            "type": "high-kinetic-energy weapon",
+            "energy": "30 MJ",
+            "projectile_velocity": "2600 m/s",
+            "storage": "cryogenic pulsed power"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM12"
+        ],
+        "entry": "KM12",
+        "note": "high-kinetic-energy weapon system with electromagnetic drive, described by KM12 (note 3.a); KMV Annex 1 prevails over GKV Annex 3 ML12"
+      }
+    },
+    {
+      "id": "M-17",
+      "request": {
+        "item": {
+          "description": "ballistic armour plate, 30 mm thick, 770 HV armour steel, NIJ Level IV certified, for vehicle and personnel protection",
+          "specifications": {
+            "material": "770 HV",
+            "thickness": "30 mm",
+            "penetration_resistance": "NIJ Level IV (14.5 mm AP from 46 m)"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM13"
+        ],
+        "entry": "KM13",
+        "note": "armour plate suitable for combat (Level IV, 770 HV), described by KM13.a.2; KMV Annex 1 prevails over GKV Annex 3 ML13"
+      }
+    },
+    {
+      "id": "M-19",
+      "request": {
+        "item": {
+          "description": "high-power continuous-wave laser weapon system, 100 kW class, vehicle-mounted for counter-UAV defence",
+          "specifications": {
+            "type": "laser weapon",
+            "power": "100 kW",
+            "wavelength": "1064 nm",
+            "platform": "vehicle-mounted",
+            "purpose": "counter-UAV"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM19"
+        ],
+        "entry": "KM19",
+        "note": "Laser-System particularly designed to destroy or disable (counter-UAV) an enemy object, described by KM19.a; KMV Annex 1 prevails over GKV Annex 3 ML19"
+      }
+    },
+    {
+      "id": "M-20",
+      "request": {
+        "item": {
+          "description": "fire-control software for the M-08 naval gun system: target acquisition, ballistic solution, lead-angle computation",
+          "specifications": {
+            "type": "software",
+            "function": "fire control, targeting, ballistic computation",
+            "platform": "naval 127 mm gun fire-control system",
+            "source_code": "yes"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM21"
+        ],
+        "entry": "KM21",
+        "note": "software particularly developed for use with a war-materiel system (M-08 naval gun fire control), described by KM21; KMV Annex 1 prevails over GKV Annex 3 ML21"
+      }
+    }
+  ]
+}
