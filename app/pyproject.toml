@@ -8,6 +8,7 @@ dependencies = [
     "docling>=2.127.0",
     "fastapi>=0.141.1",
     "pydantic-ai>=2.43.0",
+    "qdrant-client>=1.19.0",
 ]
 
 [dependency-groups]

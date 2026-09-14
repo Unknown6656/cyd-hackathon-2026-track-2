@@ -16,5 +16,10 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    qdrant_url:str = "http://qdrant:6333"
+    qdrant_api_key: str = ""
+
+    embedding_model: str = ""
+    vector_size: int
 
 settings = Settings()

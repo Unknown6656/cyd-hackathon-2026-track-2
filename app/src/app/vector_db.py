@@ -28,6 +28,10 @@ class VectorDB:
         )
         self.log.info(f"Collection {collection_name} with vector dim {vector_size} created.")
 
+    def delete_collection(self, collection_name: str) -> None:
+        if not self._collection_exists(collection_name):
+            raise RuntimeError("Collection does not exist")
+        self.client.delete_collection(collection_name)
 
     def add_vector(self, vector: list[float], payload: dict | None, collection_name: str) -> None:
         point_structs = [
@@ -42,9 +46,6 @@ class VectorDB:
             collection_name=collection_name,
             points=point_structs,
         )
-
-    def delete_vectors(self, vector_ids: list[uuid.UUID]) -> None:
-        pass
 
     def search(self, search_vector: list[float], collection_name: str, limit: int = 1) -> QueryResponse:
         if not self._collection_exists(collection_name):
