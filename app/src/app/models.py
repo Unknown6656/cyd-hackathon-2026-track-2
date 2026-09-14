@@ -60,6 +60,6 @@ class AdviseTransactionResponse(BaseModel):
 
 class AdviseResponse(BaseModel):
     refer_to_authority: bool
-    query: AdviseQueryResponse
-    classification: AdviseClassificationResponse
-    transaction: AdviseTransactionResponse
+    query: AdviseQueryResponse | None = None
+    classification: AdviseClassificationResponse | None = None
+    transaction: AdviseTransactionResponse | None = None

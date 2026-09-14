@@ -6,7 +6,7 @@ See README.md for the full contract (request blocks, response shape, citations).
 import os
 
 from fastapi import FastAPI
-from models import AdviseRequest, AdviseResponse
+from models import *
 
 
 app = FastAPI(title="Track 2 export control advisor")
@@ -24,43 +24,43 @@ MODEL = os.environ.get("MODEL")
 
 
 
-
-
-
 @app.post("/advise")
 def advise(req: AdviseRequest) -> AdviseResponse:
-    # TODO: implement your advisor.
-    
-
-    response: AdviseResponse = AdviseResponse(
-        refer_to_authority=False,
-        query=None,
-        classification=None,
-        transaction=None,
-    )
+    refer_to_authority: bool = False
+    query_response: AdviseQueryResponse | None = None
+    classification_response: AdviseClassificationResponse | None = None
+    transaction_response: AdviseTransactionResponse | None = None
 
     if req.query is not None:
-        response.query = {"answer": "TODO: not implemented", "citations": []}
+        query_response = AdviseQueryResponse(
+            answer="TODO: not implemented",
+            citations=[]
+        )
 
     if req.item is not None:
-        response.classification = {
-            "controlled": False,
-            "regime": "none",          # war_materiel | specific_military | dual_use | none
-            "entries": [],
-            "deciding_text": "TODO: not implemented",
-            "citations": [],
-        }
+        classification_response = AdviseClassificationResponse(
+            controlled=False,
+            regime=AdviseClassificationRegime.NONE,
+            entries=[],
+            deciding_text="TODO: not implemented",
+            citations=[],
+        )
 
     if req.transaction is not None:
-        response.transaction = {
-            # NO_LICENCE_REQUIRED | LICENCE_REQUIRED | PROHIBITED | REFER_TO_AUTHORITY
-            "verdict": "REFER_TO_AUTHORITY",
-            "authority": None,
-            "answer": "TODO: not implemented",
-            "citations": [],
-        }
+        transaction_response = AdviseTransactionResponse(
+            verdict=AdviseTransactionVerdict.REFER_TO_AUTHORITY,
+            authority=None,
+            answer="TODO: not implemented",
+            citations=[],
+        )
+        refer_to_authority = transaction_response.verdict == AdviseTransactionVerdict.REFER_TO_AUTHORITY
 
-    return response
+    return AdviseResponse(
+        refer_to_authority=refer_to_authority,
+        query=query_response,
+        classification=classification_response,
+        transaction=transaction_response,
+    )
 
 
 @app.get("/health")
