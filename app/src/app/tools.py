@@ -1,11 +1,5 @@
-# ---------------------------------------------------------------------------
-# Tool implementations
-# ---------------------------------------------------------------------------
-#
-# Tools should be thin wrappers around existing application functions.
-# They translate agent-friendly inputs into calls to your domain layer.
-# ---------------------------------------------------------------------------
-
+def get_ekn_description(ekn: str) -> str:
+    return "Loading description failed"
 
 def calculate_result(value: float, multiplier: float) -> float:
     """Existing application function."""
