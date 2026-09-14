@@ -1,7 +1,7 @@
 # Replace N with your team number. The hostname already has a TLS certificate on
 # your VM; compose.yaml mounts the certificate files into the proxy.
 
-llmhack-team-N.hackathon.intlab.ch {
+llmhack-team-2.hackathon.intlab.ch {
     tls /etc/caddy/certs/fullchain.pem /etc/caddy/certs/privkey.pem
     reverse_proxy app:8080
 }
