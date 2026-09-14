@@ -3,8 +3,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.providers.openai import OpenAIProvider
 
+from .config import Settings
 from .tools import calculate_average, calculate_percentage_change, calculate_result
+
+config = Settings()
+
+
+def build_model() -> OpenAIChatModel:
+    """Build an OpenAI-compatible model from the application settings."""
+    provider = OpenAIProvider(
+        base_url=config.openai_url,
+        api_key=config.openai_api_key,
+    )
+    return OpenAIChatModel(config.model_name, provider=provider)
 
 
 @dataclass
@@ -28,7 +42,7 @@ class AgentDependencies:
 # ---------------------------------------------------------------------------
 
 calculation_agent = Agent(
-    "openai:gpt-5.6",
+    build_model(),
     deps_type=AgentDependencies,
     instructions="""
     You are a calculation assistant.
@@ -74,7 +88,7 @@ def calculate_percentage_change_tool(
 # ---------------------------------------------------------------------------
 
 analysis_agent = Agent(
-    "openai:gpt-5.6",
+    build_model(),
     deps_type=AgentDependencies,
     instructions="""
     You are a data analysis assistant.
