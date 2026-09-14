@@ -41,11 +41,6 @@ class AgentDependencies:
 
 
 
-
-# ---------------------------------------------------------------------------
-# Agent 1
-# ---------------------------------------------------------------------------
-
 classifier_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
@@ -76,6 +71,7 @@ def get_ekn_description_tool(
     Fetches the text description of a good given its EKN identifier.
     """
     return get_ekn_description(ekn)
+
 
 internal_flagged_entities = json.loads(internal_flagged_entities_str)
 diversion_agent = Agent(
