@@ -5,7 +5,6 @@ import uuid
 import logging
 
 
-
 class VectorDB:
 
     def __init__(self, base_url: str, api_key: str):

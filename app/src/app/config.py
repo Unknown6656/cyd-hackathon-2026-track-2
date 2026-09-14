@@ -17,9 +17,8 @@ class Settings(BaseSettings):
     )
 
     qdrant_url:str = "http://qdrant:6333"
-    qdrant_api_key: str = ""
 
-    embedding_model: str = ""
-    vector_size: int
+    embedding_model: str = "qwen3-embedding:8b"
+    vector_size: int = 4096
 
 settings = Settings()
