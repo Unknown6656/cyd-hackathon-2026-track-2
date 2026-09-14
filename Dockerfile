@@ -1,7 +1,7 @@
-FROM python:3.12
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
 COPY . .
-RUN pip install --no-cache-dir ./app
+RUN uv pip install --system ./app
 
 CMD ["python", "-m", "app.main"]
