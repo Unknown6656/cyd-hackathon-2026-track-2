@@ -7,10 +7,12 @@ corpus/
 
 # Python
 __pycache__/
+*.egg-info/
 *.pyc
 .venv/
 venv/
 
 # OS
 .DS_Store
+*:Zone.Identifier
 Thumbs.db
