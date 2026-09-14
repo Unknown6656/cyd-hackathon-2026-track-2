@@ -15,10 +15,10 @@ config = Settings()
 def build_model() -> OpenAIChatModel:
     """Build an OpenAI-compatible model from the application settings."""
     provider = OpenAIProvider(
-        base_url=config.openai_url,
+        base_url=config.openai_base_url,
         api_key=config.openai_api_key,
     )
-    return OpenAIChatModel(config.model_name, provider=provider)
+    return OpenAIChatModel(config.model, provider=provider)
 
 
 @dataclass

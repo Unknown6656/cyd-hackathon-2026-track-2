@@ -2,10 +2,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    log_level: str = "INFO"
-    openai_url: str = "https://litellm.hackathon.intlab.ch/v1"
+    # DO NOT CHANGE - provided by organizers.
+    openai_base_url: str = "https://litellm.hackathon.intlab.ch/v1"
     openai_api_key: str = "EMPTY"
-    model_name: str = "Qwen/Qwen3.8-Flash-Next"
+    model: str = "Qwen/Qwen3.8-Flash-Next"
+
+    # app config
+    log_level: str = "INFO"
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -6,7 +6,11 @@ See README.md for the full contract (request blocks, response shape, citations).
 import os
 
 from fastapi import FastAPI
-from models import *
+
+from .models import *
+from .config import Settings
+
+config = Settings()
 
 
 app = FastAPI(title="Track 2 export control advisor")
@@ -18,9 +22,9 @@ app = FastAPI(title="Track 2 export control advisor")
 CORPUS_DIR = os.environ.get("CORPUS_DIR", "/corpus")
 
 # Inference endpoint (OpenAI-compatible LiteLLM proxy) — see inference.env.example.
-OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-MODEL = os.environ.get("MODEL")
+OPENAI_BASE_URL = config.openai_base_url
+OPENAI_API_KEY = config.openai_api_key
+MODEL = config.model
 
 
 
