@@ -3,12 +3,15 @@
 See README.md for the full contract (request blocks, response shape, citations).
 """
 
+import textwrap
+import json
 import os
 
 from fastapi import FastAPI
 
 from .config import Settings
 from .models import *
+from .backend import get_classification, semantic_search
 
 config = Settings()
 
@@ -29,7 +32,7 @@ MODEL = config.model
 
 
 @app.post("/advise")
-def advise(req: AdviseRequest) -> AdviseResponse:
+async def advise(req: AdviseRequest) -> AdviseResponse:
     refer_to_authority: bool = False
     query_response: AdviseQueryResponse | None = None
     classification_response: AdviseClassificationResponse | None = None
@@ -42,13 +45,16 @@ def advise(req: AdviseRequest) -> AdviseResponse:
         )
 
     if req.item is not None:
-        classification_response = AdviseClassificationResponse(
-            controlled=False,
-            regime=AdviseClassificationRegime.NONE,
-            entries=[],
-            deciding_text="TODO: not implemented",
-            citations=[],
-        )
+        classification_context = textwrap.dedent(f'''
+        # Item Description
+        {req.item.description}
+        
+        ## (optional) Item Specification
+        ```json
+        {json.dumps(req.item.specifications, indent=2)}
+        ```
+        ''')
+        classification_response = await get_classification(classification_context)
 
     if req.transaction is not None:
         transaction_response = AdviseTransactionResponse(

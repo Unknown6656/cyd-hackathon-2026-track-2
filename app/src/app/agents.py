@@ -7,6 +7,7 @@ from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
+from .models import AdviseClassificationResponse
 from .tools import (
     get_ekn_description,
 )
@@ -46,6 +47,7 @@ class AgentDependencies:
 classifier_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
+    output_type=AdviseClassificationResponse,
     instructions="""
 You answer the user's question using the supplied semantic-search results.
 
