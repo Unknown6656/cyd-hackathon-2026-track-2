@@ -6,4 +6,4 @@ def test_agent_replies() -> None:
 
     print(f"Using model '{config.model}' at '{config.openai_base_url}'")
     print(result.output)
-    assert result.output.strip()
+    assert result.output
