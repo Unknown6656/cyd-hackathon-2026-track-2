@@ -1,97 +1,81 @@
-import logging
-from unittest.mock import MagicMock
+import uuid
 
 import pytest
 
-from qdrant_client import models
-from qdrant_client.models import QueryResponse, VectorParams
-
+from app.config import settings
 from app.vector_db import VectorDB
 
-
-def make_db() -> tuple[VectorDB, MagicMock]:
-    # Skip __init__ so no real QdrantClient / connection is created.
-    db = VectorDB.__new__(VectorDB)
-    db.client = MagicMock()
-    db.log = logging.getLogger(__name__)
-    return db, db.client
+VECTOR_SIZE = settings.vector_size
 
 
-def test_create_collection_creates_when_missing() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = False
-
-    db.create_collection("col", 128)
-
-    client.create_collection.assert_called_once_with(
-        "col",
-        vectors_config=VectorParams(size=128, distance=models.Distance.COSINE),
-    )
+def make_vector(dim: int = 0, fill: float = 1.0) -> list[float]:
+    vector = [0.0] * VECTOR_SIZE
+    vector[dim] = fill
+    return vector
 
 
-def test_create_collection_is_noop_when_existing() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = True
-
-    db.create_collection("col", 128)
-
-    client.create_collection.assert_not_called()
+@pytest.fixture()
+def db() -> VectorDB:
+    return VectorDB(settings.qdrant_url, None)
 
 
-def test_delete_collection_raises_when_missing() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = False
+@pytest.fixture()
+def collection(db: VectorDB) -> str:
+    name = f"pytest-{uuid.uuid4().hex[:12]}"
+    db.create_collection(name, VECTOR_SIZE)
+    yield name
+    if db.client.collection_exists(name):
+        db.delete_collection(name)
+
+
+def test_create_collection_creates_when_missing(db: VectorDB, collection: str) -> None:
+    assert db.client.collection_exists(collection)
+
+
+def test_create_collection_is_idempotent(db: VectorDB, collection: str) -> None:
+    db.create_collection(collection, VECTOR_SIZE)
+
+
+def test_delete_collection_removes_existing(db: VectorDB, collection: str) -> None:
+    db.delete_collection(collection)
+
+    assert not db.client.collection_exists(collection)
+
+
+def test_delete_collection_raises_when_missing(db: VectorDB) -> None:
+    missing = f"pytest-{uuid.uuid4().hex[:12]}"
 
     with pytest.raises(RuntimeError, match="Collection does not exist"):
-        db.delete_collection("col")
-
-    client.delete_collection.assert_not_called()
+        db.delete_collection(missing)
 
 
-def test_delete_collection_deletes_when_existing() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = True
+def test_search_raises_when_collection_missing(db: VectorDB) -> None:
+    missing = f"pytest-{uuid.uuid4().hex[:12]}"
 
-    db.delete_collection("col")
-
-    client.delete_collection.assert_called_once_with("col")
+    with pytest.raises(RuntimeError, match="Collection does not exist"):
+        db.search(make_vector(), missing)
 
 
-def test_add_vector_upserts_single_point() -> None:
-    db, client = make_db()
+def test_add_and_search_returns_inserted_vector(db: VectorDB, collection: str) -> None:
+    vector = make_vector(dim=0)
 
-    db.add_vector([0.1, 0.2], {"text": "hello"}, "col")
+    db.add_vector(vector, {"text": "hello"}, collection)
 
-    client.upsert.assert_called_once()
-    _, kwargs = client.upsert.call_args
-    assert kwargs["collection_name"] == "col"
-    assert len(kwargs["points"]) == 1
-    point = kwargs["points"][0]
-    assert point.vector == [0.1, 0.2]
+    result = db.search(vector, collection, limit=1)
+
+    assert len(result.points) == 1
+    point = result.points[0]
     assert point.payload == {"text": "hello"}
+    assert point.score == pytest.approx(1.0)
 
 
-def test_search_raises_when_collection_missing() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = False
+def test_search_ranks_closest_vector_first(db: VectorDB, collection: str) -> None:
+    vector_a = make_vector(dim=0)
+    vector_b = make_vector(dim=1)
 
-    with pytest.raises(RuntimeError, match="Collection does not exist"):
-        db.search([0.1], "col")
+    db.add_vector(vector_a, {"which": "a"}, collection)
+    db.add_vector(vector_b, {"which": "b"}, collection)
 
-    client.query_points.assert_not_called()
+    result = db.search(vector_b, collection, limit=2)
 
-
-def test_search_returns_client_results() -> None:
-    db, client = make_db()
-    client.collection_exists.return_value = True
-    expected: QueryResponse = MagicMock(spec=QueryResponse)
-    client.query_points.return_value = expected
-
-    result = db.search([0.1, 0.2], "col", limit=5)
-
-    client.query_points.assert_called_once_with(
-        collection_name="col",
-        query=[0.1, 0.2],
-        limit=5,
-    )
-    assert result is expected
+    assert [point.payload["which"] for point in result.points] == ["b", "a"]
