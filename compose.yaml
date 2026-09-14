@@ -47,3 +47,17 @@ services:
       timeout: 3s
       retries: 12
       start_period: 30s
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+    ports:
+      - 6333:6333
+    volumes:
+      - qdrant_storage:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY:-}
+
+volumes:
+  qdrant_storage:
