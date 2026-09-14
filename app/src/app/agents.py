@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 
 from pydantic_ai import Agent, RunContext
@@ -7,6 +8,7 @@ from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
+from .data import internal_flagged_entities_str
 from .models import AdviseClassificationResponse
 from .tools import (
     get_ekn_description,
@@ -74,3 +76,15 @@ def get_ekn_description_tool(
     Fetches the text description of a good given its EKN identifier.
     """
     return get_ekn_description(ekn)
+
+internal_flagged_entities = json.loads(internal_flagged_entities_str)
+diversion_agent = Agent(
+    build_model(),
+    deps_type=AgentDependencies,
+    output_type=bool,
+    instructions=f"""
+    Your job is to check whether the given company is on the flagged list below (return true) or not (return false).
+
+    {internal_flagged_entities}
+"""
+)
