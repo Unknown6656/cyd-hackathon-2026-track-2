@@ -1,0 +1,462 @@
+{
+  "task": "Track 2 — example test data (controlled) for POST /advise classification",
+  "notes": [
+    "Precedence: KMV Annex 1 (war materiel list, KM 1-22) always prevails. An item that is war materiel is NOT a specific military good under GKV Annex 3.",
+    "KM numbers mirror ML numbers but the KM list is a subset: KM 14, 15, 18 and 22 contain no entries, so e.g. ML15 (night vision / thermal) items stay `specific_military` under GKV Annex 3.",
+    "KM 1 covers only hand and pistol firearms of any calibre (Hand- und Faustfeuerwaffen); other weapons (rifles, machine guns, mortars, cannons) are KM 2.",
+    "Each entry's `request` is a ready-to-send /advise payload (item block only).",
+    "`expected` is the ground truth for scoring: controlled flag, regime, control list entries.",
+    "Entries cite GKV Annex 2 (dual-use list), e.g. '3A001.a.5.a' is shorthand for the specific paragraph.",
+    "specifications are deliberately free-form (varied keys/units), matching the API contract.",
+    "Several not-controlled items sit exactly on the threshold boundary (thresholds are strict '>' unless stated otherwise)."
+  ],
+  "items": [
+    {
+      "id": "C-01",
+      "request": {
+        "item": {
+          "description": "standalone high-speed ADC integrated circuit for test and measurement",
+          "specifications": {
+            "resolution_bits": 12,
+            "sampling_rate": "450 MSa/s",
+            "channels": 1
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "12 bit (>=12, <14) with sampling rate 450 MSa/s > 400 MSPS"
+      }
+    },
+    {
+      "id": "C-02",
+      "request": {
+        "item": {
+          "description": "pipelined ADC IC for RF measurement front-end",
+          "specifications": {
+            "resolution": "10 bit",
+            "sampling_rate": "800000000 sps"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "10 bit (>=10, <12) with 800 MSPS > 600 MSPS"
+      }
+    },
+    {
+      "id": "C-03",
+      "request": {
+        "item": {
+          "description": "flash ADC IC for radar receiver prototyping",
+          "specifications": {
+            "nbits": 8,
+            "fs": "1.5 GSPS"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "8 bit (>=8, <10) with 1.5 GSPS > 1.3 GSPS"
+      }
+    },
+    {
+      "id": "C-04",
+      "request": {
+        "item": {
+          "description": "high-resolution Sigma-Delta ADC IC for precision instrumentation",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "80 MSa/s",
+            "snr_db": 94
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "16 bit with 80 MSa/s > 65 MSPS"
+      }
+    },
+    {
+      "id": "C-05",
+      "request": {
+        "item": {
+          "description": "ADC IC with on-chip frame buffer for transient data recording",
+          "specifications": {
+            "resolution_bits": 14,
+            "sampling_rate": "500 MSa/s",
+            "on_chip_memory": "64 MB SRAM",
+            "data_handling": "stores digitized data on-chip"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.14",
+        "note": "stores/ processes digitized data; 14 bit (>=14, <16) with 500 MSPS > 400 MSPS"
+      }
+    },
+    {
+      "id": "C-06",
+      "request": {
+        "item": {
+          "description": "system-in-package ADC with embedded DSP core",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "200 MSa/s",
+            "embedded_dsp": "1.4 GMAC",
+            "digitized_data_processing": true
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.14",
+        "note": "processes digitized data; 16 bit with 200 MSPS > 180 MSPS"
+      }
+    },
+    {
+      "id": "C-07",
+      "request": {
+        "item": {
+          "description": "waveform digitizer module for bench-top oscilloscope",
+          "specifications": {
+            "resolution_bits": 12,
+            "sampling_rate": "1.2 GSa/s",
+            "memory": "2 GB internal RAM",
+            "outputs": "digitized data via PCIe"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A002"
+        ],
+        "entry": "3A002.h",
+        "note": "equipment performing ADC that outputs/stores digitized data; 12 bit with 1.2 GSa/s > 1.0 GSPS"
+      }
+    },
+    {
+      "id": "C-08",
+      "request": {
+        "item": {
+          "description": "PCIe data acquisition card, 4 channels",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "250 MSa/s per channel",
+            "interface": "PCIe x4",
+            "buffer": "1 GB onboard, stream to host"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A002"
+        ],
+        "entry": "3A002.h",
+        "note": "ADC module storing/processing digitized data; 16 bit with 250 MSPS > 180 MSPS"
+      }
+    },
+    {
+      "id": "C-09",
+      "request": {
+        "item": {
+          "description": "high-speed DAC IC for arbitrary waveform generators",
+          "specifications": {
+            "resolution_bits": 10,
+            "adjusted_update_rate": "4000 MS/s",
+            "linearity_inl": "1.2 LSB"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.b",
+        "note": "10 bit (>=10, <12) with adjusted update rate 4000 MSPS > 3500 MSPS"
+      }
+    },
+    {
+      "id": "C-10",
+      "request": {
+        "item": {
+          "description": "high-performance DAC IC for RF signal generation",
+          "specifications": {
+            "resolution_bits": 12,
+            "adjusted_update_rate": "2000 MS/s",
+            "full_scale_settling_0p024pct": "7 ns"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.b",
+        "note": "12 bit with AUR 2000 MSPS (>1250, <=3500) and settling to 0.024% < 9 ns"
+      }
+    },
+    {
+      "id": "C-11",
+      "request": {
+        "item": {
+          "description": "ultra-high-speed DAC IC for test and measurement",
+          "specifications": {
+            "resolution_bits": 14,
+            "adjusted_update_rate": "4000 MS/s",
+            "output_bandwidth": "1.8 GHz"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.b",
+        "note": "12 bit or more with AUR 4000 MSPS > 3500 MSPS"
+      }
+    },
+    {
+      "id": "C-12",
+      "request": {
+        "item": {
+          "description": "DDS (direct digital synthesizer) IC for agile RF source",
+          "specifications": {
+            "dac_clock_frequency": "4.0 GHz",
+            "dac_resolution_bits": 10,
+            "tuning_resolution": "42-bit phase accumulator"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.13",
+        "note": "DAC clock 4.0 GHz >= 3.5 GHz with DAC resolution 10 bit (>=10, <12)"
+      }
+    },
+    {
+      "id": "C-13",
+      "request": {
+        "item": {
+          "description": "high-precision DDS IC for calibration sources",
+          "specifications": {
+            "dac_clock_frequency": "1.5 GHz",
+            "dac_resolution_bits": 14,
+            "spurs_dbc": "-130"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.13",
+        "note": "DAC clock 1.5 GHz >= 1.25 GHz with DAC resolution 14 bit (>=12)"
+      }
+    },
+    {
+      "id": "C-14",
+      "request": {
+        "item": {
+          "description": "ruggedized ADC module for missile guidance and control system test and evaluation",
+          "specifications": {
+            "resolution_bits": 8,
+            "sampling_rate": "100 MSa/s",
+            "ruggedization": "MIL-STD-810H, MIL-STD-461G",
+            "intended_application": "missile T&E"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A101"
+        ],
+        "entry": "3A101.a",
+        "note": "ADC suitable for missiles and ruggedized to military specifications, controlled regardless of the 3A001.a.5.a thresholds (8 bit / 100 MSa/s is below them)"
+      }
+    },
+    {
+      "id": "C-15",
+      "request": {
+        "item": {
+          "description": "electronic streak camera for ultra-fast event imaging",
+          "specifications": {
+            "type": "streak camera",
+            "time_resolution": "20 ns",
+            "spectral_range": "300-1000 nm"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A003"
+        ],
+        "entry": "6A003.a",
+        "note": "electronic streak camera with time resolution 20 ns < 50 ns"
+      }
+    },
+    {
+      "id": "C-16",
+      "request": {
+        "item": {
+          "description": "electronic framing camera for shock wave visualization",
+          "specifications": {
+            "type": "framing camera",
+            "recording_speed": "1200000 frames/s",
+            "frame_exposure": "1 us"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A003"
+        ],
+        "entry": "6A003.a",
+        "note": "electronic framing camera with recording speed 1,200,000 frames/s > 1,000,000 frames/s"
+      }
+    },
+    {
+      "id": "C-17",
+      "request": {
+        "item": {
+          "description": "electronic high-speed camera for ballistic measurements",
+          "specifications": {
+            "type": "electronic camera",
+            "electronic_shutter_per_full_frame": "0.5 us",
+            "output_rate": "200 full frames/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A003"
+        ],
+        "entry": "6A003.a",
+        "note": "electronic shutter 0.5 us < 1 us per full frame AND output enabling 200 full frames/s > 125"
+      }
+    },
+    {
+      "id": "C-18",
+      "request": {
+        "item": {
+          "description": "monochrome CMOS video camera for machine vision with stabilization",
+          "specifications": {
+            "sensor": "CMOS, monochrome",
+            "active_pixels": "20.1 M",
+            "spectral_sensitivity_peak": "400-1000 nm",
+            "records_camera_position_data": true,
+            "imu": "built-in 6-axis"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A003"
+        ],
+        "entry": "6A003.b",
+        "note": "monochrome semiconductor camera with >4x10^6 active pixels, sensitivity in 10 nm - 30,000 nm band, and ability to record internally generated camera position data"
+      }
+    },
+    {
+      "id": "C-19",
+      "request": {
+        "item": {
+          "description": "line-scan hyperspectral imaging camera with mechanical scanning stage",
+          "specifications": {
+            "type": "scanning camera",
+            "detector": "linear InGaAs array",
+            "elements_per_array": 16384,
+            "spectral_sensitivity_peak": "400-1000 nm",
+            "scanning": "mechanical in one direction"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A003"
+        ],
+        "entry": "6A003.b",
+        "note": "scanning camera with peak sensitivity in band, linear detector array > 8192 elements, mechanical scanning in one direction"
+      }
+    },
+    {
+      "id": "C-20",
+      "request": {
+        "item": {
+          "description": "high-speed framing camera for combustion diagnostics",
+          "specifications": {
+            "type": "framing camera",
+            "recording_speed": "300000 frames/s",
+            "frame_exposure": "2 us"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A203"
+        ],
+        "entry": "6A203",
+        "note": "framing camera with recording speed 300,000 frames/s > 225,000 frames/s (6A003.a threshold of 1,000,000 frames/s not reached)"
+      }
+    }
+  ]
+}

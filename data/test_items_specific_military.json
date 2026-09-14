@@ -1,0 +1,340 @@
+{
+  "task": "Track 2 — example test data (specific military goods, NOT war materiel) for POST /advise classification",
+  "notes": [
+    "Precedence: KMV Annex 1 (war materiel list, KM 1-22) always prevails. An item that is war materiel is NOT a specific military good under GKV Annex 3.",
+    "Every item in this file is a specific military good under GKV Annex 3 that has NO counterpart in KMV Annex 1, so the expected regime is `specific_military`.",
+    "Why each group is not war materiel:",
+    "- ML 14, 15, 18 and 22 have no counterpart: KM 14, 15, 18 and 22 are empty ('Enthält kein KM').",
+    "- ML 7 biological/chemical agents: KM 7 lists ONLY the four riot-control agents (CA, CS, CN, CR). Chemical warfare agents, biological agents and CBRN protective/detection equipment are NOT war materiel — note CS/CN/CR ARE war materiel under KM 7.",
+    "- ML 8 oxidizers, binders and additives: KM 8 covers only explosives/propellants/pyrotechnics meeting its performance parameters (or military pyrotechnics / specially designed military aircraft fuels); simple chemical materials without such parameters are not war materiel.",
+    "- ML 16: KM 16 covers only forgings/castings for KM 1, 2, 3, 4, 6, 9, 10, 12 or 19 goods; a forging for an ML-14 good is therefore ML 16.",
+    "- ML 21: KM 21 covers only software for goods ON the KM list; software for ML-only goods (ML 14, ML 15, ML 17) is ML 21. (Contrast: fire-control software for a KM 5 weapon system is KM 21 war materiel.)",
+    "- ML 17: KM 17 covers only robots, parametric libraries and nuclear power plants for combat; diving apparatus and construction equipment are ML 17.",
+    "Contrast with ML 11: electronic equipment 'particularly designed for combat' (incl. ECM/ECCM and underwater countermeasures) IS war materiel under KM 11 — do not classify such items as specific_military.",
+    "Each entry's `request` is a ready-to-send /advise payload (item block only).",
+    "`expected` is the ground truth for scoring: controlled flag, regime, control list entries.",
+    "specifications are deliberately free-form (varied keys/units), matching the API contract."
+  ],
+  "items": [
+    {
+      "id": "S-01",
+      "request": {
+        "item": {
+          "description": "strain of a biological agent selected and modified to increase its effectiveness for combat use",
+          "specifications": { "type": "biological agent", "modification": "selected for increased virulence", "purpose": "combat" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML7"],
+        "entry": "ML7",
+        "note": "biological agent selected/modified for combat, described by ML7.a; KM 7 lists only the four riot-control agents (CA, CS, CN, CR), so this is NOT war materiel"
+      }
+    },
+    {
+      "id": "S-02",
+      "request": {
+        "item": {
+          "description": "soman (GD, CAS 96-64-0), 100 g in sealed ampoules, for identification purposes",
+          "specifications": { "agent": "soman (GD)", "cas": "96-64-0", "quantity": "100 g", "packaging": "sealed ampoules" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML7"],
+        "entry": "ML7",
+        "note": "chemical warfare agent, described by ML7.b; KM 7 covers riot-control agents only — CW agents are NOT war materiel (contrast: CS/CN/CR ARE war materiel under KM 7)"
+      }
+    },
+    {
+      "id": "S-03",
+      "request": {
+        "item": {
+          "description": "vehicle-mounted dispersal system, 100 l, particularly designed for dissemination of chemical or biological agents",
+          "specifications": { "type": "dispersal system", "capacity": "100 l", "platform": "truck-mounted", "agent_compatibility": "liquid CW agent / bioaerosol" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML7"],
+        "entry": "ML7",
+        "note": "equipment particularly designed for dissemination of chemical or biological agents, described by ML7.e; no counterpart in KMV Annex 1"
+      }
+    },
+    {
+      "id": "S-04",
+      "request": {
+        "item": {
+          "description": "individual CBRN protective ensemble (filter hood, protective clothing, gloves, boots) to military specification",
+          "specifications": { "type": "CBRN protective equipment", "components": "filter hood, suit, gloves, boots", "specification": "military specification" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML7"],
+        "entry": "ML7",
+        "note": "protective equipment for military use, described by ML7.f; KM 7 covers the agents, not the protective gear"
+      }
+    },
+    {
+      "id": "S-05",
+      "request": {
+        "item": {
+          "description": "portable field identification kit for chemical and biological agents with spectrometric detector",
+          "specifications": { "type": "CBRN detection equipment", "methods": "spectrometric + colorimetric", "portable": true, "military": true }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML7"],
+        "entry": "ML7",
+        "note": "equipment particularly designed for detection/identification of chemical or biological agents, described by ML7.g; not in KMV Annex 1"
+      }
+    },
+    {
+      "id": "S-06",
+      "request": {
+        "item": {
+          "description": "ammonium perchlorate, 25 t, for use as oxidizer in solid rocket propellants",
+          "specifications": { "material": "ammonium perchlorate (AP)", "quantity": "25 t", "use": "oxidizer, solid rocket motors" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML8"],
+        "entry": "ML8",
+        "note": "oxidizer for propellants, described by ML8.d; KM 8 covers explosives/propellants/pyrotechnics meeting its performance parameters — a raw oxidizer has none of them and is NOT war materiel"
+      }
+    },
+    {
+      "id": "S-07",
+      "request": {
+        "item": {
+          "description": "hydroxyl-terminated polybutadiene (HTPB) binder, 10 t, for composite solid propellants",
+          "specifications": { "material": "HTPB", "quantity": "10 t", "use": "binder, composite solid propellant" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML8"],
+        "entry": "ML8",
+        "note": "binder for propellants, described by ML8.e; KM 8 does not list binders as war materiel"
+      }
+    },
+    {
+      "id": "S-08",
+      "request": {
+        "item": {
+          "description": "ferrocene, 100 kg, combustion catalyst additive for solid propellants",
+          "specifications": { "material": "ferrocene", "quantity": "100 kg", "use": "combustion modifier, solid propellant" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML8"],
+        "entry": "ML8",
+        "note": "additive for propellants, described by ML8.f; KM 8 does not list such additives as war materiel"
+      }
+    },
+    {
+      "id": "S-09",
+      "request": {
+        "item": {
+          "description": "full-motion flight simulator for a military combat helicopter, with threat-environment and weapons modelling",
+          "specifications": { "type": "flight simulator", "airframe": "military attack helicopter", "motion_platform": "6-DOF", "modelling": "threat environment, weapons" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML14"],
+        "entry": "ML14",
+        "note": "military training simulator, described by ML14; KM 14 is empty ('Enthält kein KM'), so simulators are never war materiel"
+      }
+    },
+    {
+      "id": "S-10",
+      "request": {
+        "item": {
+          "description": "remotely piloted aerial target system with recovery gear for gunnery training ranges",
+          "specifications": { "type": "drone target system", "use": "gunnery training", "recovery": "net recovery", "payload": "training flares" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML14"],
+        "entry": "ML14",
+        "note": "military training equipment (drone target), described by ML14; KM 14 is empty — not war materiel (contrast: a weaponised RPV would be KM 10.d war materiel)"
+      }
+    },
+    {
+      "id": "S-11",
+      "request": {
+        "item": {
+          "description": "virtual reality combat training system for infantry, with 3D threat models and mission scenarios",
+          "specifications": { "type": "VR training system", "scenarios": "combat missions", "threat_models": "3D", "users": "up to 32" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML14"],
+        "entry": "ML14",
+        "note": "equipment for simulating military scenarios, described by ML14; KM 14 is empty — not war materiel"
+      }
+    },
+    {
+      "id": "S-12",
+      "request": {
+        "item": {
+          "description": "third-generation image-intensifier night-vision monocular with infrared illuminator, for vehicle and infantry use",
+          "specifications": { "type": "night-vision device", "intensifier": "gen-3 image intensifier tube", "illuminator": "IR", "military_spec": "STANAG 4240" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML15"],
+        "entry": "ML15",
+        "note": "night-vision device with image intensifier, described by ML15; KM 15 is empty ('Enthält kein KM'), so it is NOT war materiel despite the matching ML number (also distinct from dual-use 6A003 cameras)"
+      }
+    },
+    {
+      "id": "S-13",
+      "request": {
+        "item": {
+          "description": "third-generation image-intensifier tube, 25 mm objective, for military night-vision equipment",
+          "specifications": { "type": "image-intensifier tube", "generation": "gen 3", "objective": "25 mm", "military": true }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML15"],
+        "entry": "ML15",
+        "note": "image-intensifier tube for military imaging equipment, described by ML15; KM 15 is empty — not war materiel"
+      }
+    },
+    {
+      "id": "S-14",
+      "request": {
+        "item": {
+          "description": "infrared countermeasure pod with IR decoy launchers, for a military trainer aircraft",
+          "specifications": { "type": "IR countermeasure pod", "countermeasures": "IR decoys", "platform": "military trainer aircraft", "band": "3-5 um sensing" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML15"],
+        "entry": "ML15",
+        "note": "countermeasure equipment for imaging (IR) systems, described by ML15; KM 15 is empty and KM 11 covers only radar/communications ECM and underwater countermeasures — so this is NOT war materiel"
+      }
+    },
+    {
+      "id": "S-15",
+      "request": {
+        "item": {
+          "description": "forged landing-gear skid, aluminium, geometry specifically matched to a military training drone of the S-10 system",
+          "specifications": { "type": "forging (unworked)", "material": "aluminium", "geometry": "matches ML14 training drone landing skid" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML16"],
+        "entry": "ML16",
+        "note": "specially designed forging for a controlled good, described by ML16; KM 16 covers only forgings for KM 1, 2, 3, 4, 6, 9, 10, 12 or 19 goods — the underlying good is ML 14 (KM 14 empty), so this stays specific military"
+      }
+    },
+    {
+      "id": "S-16",
+      "request": {
+        "item": {
+          "description": "closed-circuit underwater breathing apparatus (rebreather) particularly designed for military diving operations",
+          "specifications": { "type": "closed-circuit rebreather", "designed_for": "military diving", "depth_rating": "50 m" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML17"],
+        "entry": "ML17",
+        "note": "diving apparatus particularly designed for military purposes, described by ML17.a; KM 17 covers only robots, parametric libraries and nuclear power plants for combat — diving gear is NOT war materiel"
+      }
+    },
+    {
+      "id": "S-17",
+      "request": {
+        "item": {
+          "description": "armoured mobile crane truck particularly designed for military airfield construction and maintenance",
+          "specifications": { "type": "mobile crane", "capacity": "80 t", "designed_for": "military airfield construction", "features": "ballistic protection of cab, rapid deployment" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML17"],
+        "entry": "ML17",
+        "note": "construction equipment particularly designed or modified for military purposes, described by ML17.b; not in KMV Annex 1"
+      }
+    },
+    {
+      "id": "S-18",
+      "request": {
+        "item": {
+          "description": "software particularly developed for the S-09 military flight simulator: signal-processing, threat and weapons-scoring algorithms",
+          "specifications": { "type": "software", "for": "military flight simulator (ML14 good)", "functions": "signal processing, threat models, scoring", "source_code": "yes" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML21"],
+        "entry": "ML21",
+        "note": "software for a good that is NOT on the KM list (ML 14, KM 14 empty); KM 21 captures only software for KM-listed goods, so this is ML 21, not war materiel (contrast: fire-control software for a KM 5 weapon system IS KM 21 war materiel)"
+      }
+    },
+    {
+      "id": "S-19",
+      "request": {
+        "item": {
+          "description": "software particularly developed for the S-14 IR countermeasure pod: cueing, tracking and decoy-sequence algorithms",
+          "specifications": { "type": "software", "for": "IR countermeasure pod (ML15 good)", "functions": "cueing, tracking, decoy sequencing", "source_code": "yes" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML21"],
+        "entry": "ML21",
+        "note": "software for a good that is NOT on the KM list (ML 15, KM 15 empty); therefore ML 21 specific military, not KM 21 war materiel"
+      }
+    },
+    {
+      "id": "S-20",
+      "request": {
+        "item": {
+          "description": "production drawings and manufacturing process documentation for the S-16 rebreather demand valve, including material heat-treatment schedules",
+          "specifications": { "type": "technology", "for": "ML17.a rebreather demand valve", "content": "drawings, process documentation, material schedules" }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "specific_military",
+        "entries": ["GKV Anhang 3 ML22"],
+        "entry": "ML22",
+        "note": "'technology' required for the production of an ML-listed good; KM 22 is empty ('Enthält kein KM'), so technology is never war materiel and stays under GKV Annex 3 ML22"
+      }
+    }
+  ]
+}

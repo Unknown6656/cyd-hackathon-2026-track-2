@@ -7,8 +7,8 @@ import os
 
 from fastapi import FastAPI
 
-from .models import *
 from .config import Settings
+from .models import *
 
 config = Settings()
 

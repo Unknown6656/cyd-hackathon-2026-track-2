@@ -1,0 +1,154 @@
+canonical_code,de,fr,it,description
+ABEC,ABEC,ABEC,ABEC,Annular Bearing Engineers Committee
+ABMA,ABMA,ABMA,ABMA,American Bearing Manufacturers Association
+ADC,ADC,CAN,ADC,Analogue-to-Digital Converter
+AGMA,AGMA,AGMA,AGMA,American Gear Manufacturers’ Association
+AHRS,AHRS,AHRS,AHRS,Attitude and Heading Reference Systems
+AISI,AISI,AISI,AISI,American Iron and Steel Institute
+ALE,ALE,ALE,ALE,Atomic Layer Epitaxy
+ALU,ALU,UAL,ALU,Arithmetic Logic Unit
+ANSI,ANSI,ANSI,ANSI,American National Standards Institute
+APP,APP,PCC,APP,Adjusted Peak Performance
+APU,APU,GAP,APU,Auxiliary Power Unit
+ASTM,ASTM,ASTM,ASTM,American Society for Testing and Materials
+ATC,ATC,ATC,ATC,Air Traffic Control
+BJT,BJT,BJT,BJT,Bipolar Junction Transistors
+BPP,BPP,BPP,BPP,Beam Parameter Product
+BSC,BSC,CSB,BSC,Base Station Controller
+CAD,CAD,CAO,CAD,Computer-Aided-Design
+CAS,CAS,CAS,CAS,Chemical Abstracts Service
+CCD,CCD,CCD,CCD,Charge Coupled Device
+CDU,CDU,CDU,UCV,Control and Display Unit
+CEP,CEP,ECP,CEP,Circular Error Probable
+CMM,CMM,CMM,CMM,Coordinate Measuring Machine
+CMOS,CMOS,CMOS,CMOS,Complementary Metal Oxide Semiconductor
+CNTD,CNTD,CNTD,CNTD,Controlled Nucleation Thermal Deposition
+CPLD,CPLD,CPLD,CPLD,Complex Programmable Logic Device
+CPU,CPU,UC,CPU,Central Processing Unit
+CVD,CVD,CVD,CVD,Chemical Vapour Deposition
+CW,CW,GC,CW,Chemical Warfare
+CW,CW,CW,CW,Continuous Wave
+DAC,DAC,CNA,DAC,Digital-to-Analogue Converter
+DANL,DANL,DANL,DANL,Displayed Average Noise Level
+DBRN,DBRN,DBRN,DBRN,Data-Base Referenced Navigation
+DDS,DDS,DDS,DDS,Direct Digital Synthesizer
+DMA,DMA,DMA,DMA,Dynamisch-mechanische Analyse
+DME,DME,DME,DME,Distance Measuring Equipment
+DMOSFET,DMOSFET,DMOSFET,DMOSFET,Diffused Metal Oxide Semiconductor Field Effect Transistor
+DS,DS,SD,DS,Directionally Solidified
+EB,EB,AP,EB,Exploding Bridge
+EB-PVD,EB-PVD,EB-PVD,EB-PVD,Electron Beam Physical Vapour Deposition
+EBW,EBW,FE,EBW,Exploding bridge wire
+ECAD,ECAD,CAOE,ECAD,Electronic Computer-Aided Design
+ECM,ECM,ECM,ECM,Electro-chemical machining
+EDM,EDM,EDM,EDM,Electrical Discharge Machines
+EFI,EFI,IFE,EFI,Exploding Foil Initiators
+EIRP,EIRP,PIRE,EIRP,Effective Isotropic Radiated Power
+EMP,EMP,IEM,EMP,Electromagnetic Pulse
+ENOB,ENOB,ENOB,ENOB,Effective Number of Bits
+ERF,ERF,ERF,ERF,Electrorheological Finishing
+ERP,ERP,PAR,ERP,Effective Radiated Power
+ESD,ESD,DES,ESD,Electrostatic Discharge
+ETO,ETO,ETO,ETO,Emitter-Turn-Off-Thyristor
+ETT,ETT,ETT,ETT,Electrical Triggering Thyristor
+EUV,EUV,EUV,EUV,Extreme Ultraviolet
+FADEC,FADEC,FADEC,FADEC,Full Authority Digital Engine Control
+FFT,FFT,FFT,FFT,Fast Fourier Transform
+FPGA,FPGA,FPGA,FPGA,Field Programmable Gate Array
+FPIC,FPIC,FPIC,FPIC,Field Programmable Interconnect
+FPLA,FPLA,FPLA,FPLA,Field Programmable Logic Array
+FPLD,FPLD,FPLD,FPLD,Field Programmable Logic Device
+FPO,FPO,FPO,FPO,Floating Point Operation
+FWHM,FWHM,LMH,FWHM,Full-Width Half-Maximum
+GAAFET,GAAFET,GAAFET,GAAFET,Gate-All-Around Field-Effect Transistor
+GLONASS,GLONASS,GLONASS,GLONASS,Global Navigation Satellite System
+GNSS,GNSS,GNSS,GNSS,Global Navigation Satellite System
+GPS,GPS,GPS,GPS,Global Positioning System
+GSM,GSM,GSM,GSM,Global System for Mobile Communications
+GTO,GTO,GTO,GTO,Gate Turn-off Thyristor
+HBT,HBT,HBT,HBT,Heterojunction Bipolar Transistor
+HDMI,HDMI,HDMI,HDMI,High-Definition Multimedia Interface
+HEMT,HEMT,HEMT,HEMT,High Electron Mobility Transistors
+ICAO,ICAO,OACI,ICAO,International Civil Aviation Organization
+IEC,IEC,CEI,CEI,International Electrotechnical Commission
+IED,IED,EEI,IED,Improvised Explosive Device
+IEEE,IEEE,IEEE,IEEE,Institute of Electrical and Electronic Engineers
+IFOV,IFOV,IFOV,IFOV,Instantaneous-Field-Of- View
+IGBT,IGBT,IGBT,IGBT,Insulated Gate Bipolar Transistor
+IGCT,IGCT,IGCT,IGCT,Integrated Gate Commutated Thyristor
+IHO,IHO,OHI,IHO,International Hydrographic Organization
+ILS,ILS,ILS,ILS,Instrument Landing System
+IMU,IMU,UMI,IMU,Inertial Measurement Unit
+INS,INS,INS,INS,Inertial Navigation System
+IP,IP,IP,IP,Internetprotokoll
+IRS,IRS,IRS,IRS,Inertial Reference System
+IRU,IRU,IRU,IRU,Inertial Reference Unit
+ISA,ISA,ISA,ISA,International Standard Atmosphere
+ISAR,ISAR,ISAR,ISAR,Inverse Synthetic Aperture Radar
+ISO,ISO,ISO,ISO,International Organization for Standardization
+ITU,ITU,UIT,UIT,International Telecommunication Union
+JT,JT,JT,JT,Joule-Thomson
+LIDAR,LIDAR,LIDAR,LIDAR,Light Detection and Ranging
+LIDT,LIDT,LIDT,LIDT,Laser Induced Damage Threshold
+LOA,LOA,LOA,LOA,Length Overall
+LRU,LRU,URP,UIL,Line Replaceable Unit
+LTT,LTT,LTT,LTT,Light Triggering Thyristor
+LUT,LUT,LUT,LUT,Lookup-Tabelle
+MLS,MLS,MLS,MLS,Microwave Landing Systems
+MMIC,MMIC,MMIC,MMIC,Monolithic Microwave Integrated Circuit
+MOCVD,MOCVD,MOCVD,MOCVD,Metal Organic Chemical Vapour Deposition
+MOSFET,MOSFET,MOSFET,MOSFET,Metal-Oxide- Semiconductor Field Effect Transistor
+MPM,MPM,MPM,MPM,Microwave Power Module
+MRF,MRF,MRF,MRF,Magnetorheological Finishing
+MRE,KAS,MRF,ERM,Minimum Resolvable Feature size
+MRI,MRI,IRM,MRI,Magnetic Resonance Imaging
+MTBF,MTBF,MTBF,MTBF,Mean-Time-Between-Failures
+MTTF,MTTF,MTTF,MTTF,Mean-Time-To- Failure
+NA,NA,ON,AN,Numerical Aperture
+NDT,ZfP,END,NDT,Non-Destructive Test
+NEQ,NEQ,NEQ,NEQ,Net Explosive Quantity
+NIJ,NIJ,NIJ,NIJ,National Institute of Justice
+OAM,OAM,OAM,OAM,"Operations, Administration or Maintenance"
+OSI,OSI,OSI,OSI,Open Systems Interconnection
+PAI,PAI,PAI,PAI,Polyamide-imides
+PAR,PAR,PAR,PAR,Precision Approach Radar
+PCL,PCL,PCL,PCL,Passive Coherent Location
+PDK,PDK,PDK,PDK,Process Design Kit
+PIN,PIN,PIN,PIN,Personal Identification Number
+PMAC,PMAC,PMAC,PMAC,Permanent Magnet Alterning Current
+PMR,PMR,PMR,PMR,Private Mobile Radio
+PVD,PVD,PVD,PVD,Physical Vapour Deposition
+ppm,ppm,ppm,ppm,parts per million
+QAM,QAM,QAM,QAM,Quadrature- Amplitude-Modulation
+QE,QE,QE,QE,Quantum Efficiency
+RAP,RAP,RAP,RAP,Reactive Atom Plasmas
+RF,RF,RF,RF,Radio Frequency
+rms,rms,rms,rms,Root Mean Square
+RNC,RNC,RNC,RNC,Radio Network Controller
+RNSS,RNSS,RNSS,RNSS,Regional Navigation Satellite System
+ROIC,ROIC,ROIC,ROIC,Read-out Integrated Circuit
+S-FIL,S-FIL,S-FIL,S-FIL,Step and Flash Imprint Lithography
+SAR,SAR,SAR,SAR,Synthetic Aperture Radar
+SAS,SAS,SOS,SAS,Synthetic Aperture Sonar
+SC,SC,SC,SC,Single Crystal
+SCR,SCR,SCR,SCR,Silicon Controlled Rectifier
+SFDR,SFDR,SFDR,SFDR,Spurious Free Dynamic Range
+SHPL,SHPL,SHPL,SHPL,Super High Powered Laser
+SLAR,SLAR,RAAL,SLAR,Sidelooking Airborne Radar
+SOI,SOI,SOI,SOI,Silicon-on-Insulator
+SQUID,SQUID,SQUID,SQUID,Superconducting Quantum Interference Device
+SRA,SRA,URA,SRA,Shop Replaceable Assembly
+SRAM,SRAM,SRAM,SRAM,Static Random Access Memory
+SSB,SSB,BLU,SSB,Single Sideband
+SSR,SSR,SSR,SSR,Secondary Surveillance Radar
+SSS,SSS,SBL,SSS,Side Scan Sonar
+TIR,TIR,TIR,TIR,Total indicated reading
+TVR,TVR,TVR,TVR,Transmitting Voltage Response
+u,u,u,u,Atomic mass unit
+UPR,UPR,UPR,UPR,Unidirectional Positioning Repeatability
+UTS,UTS,UTS,UTS,Ultimate Tensile Strength
+UV,UV,UV,UV,Ultraviolet
+VJFET,VJFET,VJFET,VJFET,Vertical Junction Field Effect Transistor
+VOR,VOR,VOR,VOR,Very High Frequency Omni- directional Range
+WHO,WHO,OMS,OMS,World Health Organization
+WLAN,WLAN,WLAN,WLAN,Wireless Local Area Network

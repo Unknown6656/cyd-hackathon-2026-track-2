@@ -1,0 +1,386 @@
+{
+  "task": "Track 2 — example test data (not_controlled) for POST /advise classification",
+  "notes": [
+    "Precedence: KMV Annex 1 (war materiel list, KM 1-22) always prevails. An item that is war materiel is NOT a specific military good under GKV Annex 3.",
+    "KM numbers mirror ML numbers but the KM list is a subset: KM 14, 15, 18 and 22 contain no entries, so e.g. ML15 (night vision / thermal) items stay `specific_military` under GKV Annex 3.",
+    "KM 1 covers only hand and pistol firearms of any calibre (Hand- und Faustfeuerwaffen); other weapons (rifles, machine guns, mortars, cannons) are KM 2.",
+    "Each entry's `request` is a ready-to-send /advise payload (item block only).",
+    "`expected` is the ground truth for scoring: controlled flag, regime, control list entries.",
+    "Entries cite GKV Annex 2 (dual-use list), e.g. '3A001.a.5.a' is shorthand for the specific paragraph.",
+    "specifications are deliberately free-form (varied keys/units), matching the API contract.",
+    "Several not-controlled items sit exactly on the threshold boundary (thresholds are strict '>' unless stated otherwise)."
+  ],
+  "items": [
+    {
+      "id": "N-01",
+      "request": {
+        "item": {
+          "description": "12-bit ADC IC for industrial condition monitoring",
+          "specifications": {
+            "resolution_bits": 12,
+            "sampling_rate": "390 MSa/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "12 bit requires > 400 MSPS under 3A001.a.5.a; 390 MSPS is below"
+      }
+    },
+    {
+      "id": "N-02",
+      "request": {
+        "item": {
+          "description": "14-bit ADC IC for audio measurement",
+          "specifications": {
+            "resolution_bits": 14,
+            "sampling_rate": "250 MSa/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.5.a requires sampling rate > 250 MSPS; exactly 250 does not exceed it"
+      }
+    },
+    {
+      "id": "N-03",
+      "request": {
+        "item": {
+          "description": "10-bit ADC IC for process control",
+          "specifications": {
+            "resolution_bits": 10,
+            "sampling_rate": "600 MSa/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.5.a requires > 600 MSPS at 10 bit; exactly 600 does not exceed it"
+      }
+    },
+    {
+      "id": "N-04",
+      "request": {
+        "item": {
+          "description": "16-bit Sigma-Delta ADC IC for power quality analyzers",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "65 MSa/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.5.a requires > 65 MSPS at 16 bit; exactly 65 does not exceed it"
+      }
+    },
+    {
+      "id": "N-05",
+      "request": {
+        "item": {
+          "description": "8-bit flash ADC IC for digital oscilloscope entry model",
+          "specifications": {
+            "resolution_bits": 8,
+            "sampling_rate": "1.2 GSPS"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "8 bit requires > 1.3 GSPS under 3A001.a.5.a; 1.2 GSPS is below"
+      }
+    },
+    {
+      "id": "N-06",
+      "request": {
+        "item": {
+          "description": "ADC IC with on-chip FIFO for sensor interface",
+          "specifications": {
+            "resolution_bits": 14,
+            "sampling_rate": "400 MSa/s",
+            "on_chip_memory": "8 MB SRAM"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.14 requires > 400 MSPS at 14 bit (stores digitized data); exactly 400 does not exceed it"
+      }
+    },
+    {
+      "id": "N-07",
+      "request": {
+        "item": {
+          "description": "ADC IC with embedded processor for edge analytics",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "180 MSa/s",
+            "embedded_cpu": "ARM Cortex-M4",
+            "digitized_data_processing": true
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.14 requires > 180 MSPS at 16 bit; exactly 180 does not exceed it"
+      }
+    },
+    {
+      "id": "N-08",
+      "request": {
+        "item": {
+          "description": "bench-top oscilloscope digitizer, entry-level",
+          "specifications": {
+            "resolution_bits": 12,
+            "sampling_rate": "900 MSa/s",
+            "memory": "512 MB"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "3A002.h uses the 3A001.a.14 thresholds for 12 bit equipment (> 1.0 GSPS); 900 MSa/s is below"
+      }
+    },
+    {
+      "id": "N-09",
+      "request": {
+        "item": {
+          "description": "transient recorder, 14-bit",
+          "specifications": {
+            "resolution_bits": 14,
+            "sampling_rate": "400 MSa/s",
+            "storage": "internal SSD"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A002.h / 3A001.a.14 requires > 400 MSPS at 14 bit; exactly 400 does not exceed it"
+      }
+    },
+    {
+      "id": "N-10",
+      "request": {
+        "item": {
+          "description": "10-bit DAC IC for audio test equipment",
+          "specifications": {
+            "resolution_bits": 10,
+            "adjusted_update_rate": "3000 MS/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "3A001.a.5.b requires AUR > 3500 MSPS at 10 bit; 3000 MSPS is below"
+      }
+    },
+    {
+      "id": "N-11",
+      "request": {
+        "item": {
+          "description": "12-bit DAC IC for ultrasonic transducer drive",
+          "specifications": {
+            "resolution_bits": 12,
+            "adjusted_update_rate": "2000 MS/s",
+            "full_scale_settling_0p024pct": "12 ns",
+            "sfdr_dbc_at_100mhz": 60
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "AUR 2000 MSPS is in the (1250, 3500] band but neither extra condition is met: settling 12 ns >= 9 ns and SFDR 60 dBc <= 68 dBc"
+      }
+    },
+    {
+      "id": "N-12",
+      "request": {
+        "item": {
+          "description": "12-bit video DAC IC for display drivers",
+          "specifications": {
+            "resolution_bits": 12,
+            "adjusted_update_rate": "1000 MS/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "AUR 1000 MSPS is below 1250 MSPS for 12-bit DACs under 3A001.a.5.b"
+      }
+    },
+    {
+      "id": "N-13",
+      "request": {
+        "item": {
+          "description": "14-bit DAC IC for medical ultrasound",
+          "specifications": {
+            "resolution_bits": 14,
+            "adjusted_update_rate": "3500 MS/s",
+            "full_scale_settling_0p024pct": "15 ns",
+            "sfdr_dbc_at_100mhz": 62
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "boundary: 3A001.a.5.b requires AUR > 3500 MSPS for >=12 bit, or (1250, 3500] with settling < 9 ns or SFDR > 68 dBc; exactly 3500 MSPS with settling 15 ns and SFDR 62 dBc meets none"
+      }
+    },
+    {
+      "id": "N-14",
+      "request": {
+        "item": {
+          "description": "DDS IC for consumer RF tuning applications",
+          "specifications": {
+            "dac_clock_frequency": "3.0 GHz",
+            "dac_resolution_bits": 10
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "3A001.a.13 requires DAC clock >= 3.5 GHz at 10 bit; 3.0 GHz is below"
+      }
+    },
+    {
+      "id": "N-15",
+      "request": {
+        "item": {
+          "description": "DDS IC for test signal generation",
+          "specifications": {
+            "dac_clock_frequency": "1.2 GHz",
+            "dac_resolution_bits": 14
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "3A001.a.13 requires DAC clock >= 1.25 GHz for >= 12 bit; 1.2 GHz is below"
+      }
+    },
+    {
+      "id": "N-16",
+      "request": {
+        "item": {
+          "description": "electronic streak camera for plasma diagnostics",
+          "specifications": {
+            "type": "streak camera",
+            "time_resolution": "80 ns"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "6A003.a requires time resolution < 50 ns and 6A203 requires <= 50 ns for electronic streak cameras; 80 ns is above both"
+      }
+    },
+    {
+      "id": "N-17",
+      "request": {
+        "item": {
+          "description": "high-speed framing camera for slow-motion research",
+          "specifications": {
+            "type": "framing camera",
+            "recording_speed": "200000 frames/s"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "6A003.a requires > 1,000,000 frames/s and 6A203 requires > 225,000 frames/s; 200,000 frames/s is below both"
+      }
+    },
+    {
+      "id": "N-18",
+      "request": {
+        "item": {
+          "description": "gated ICCD camera for laser-induced breakdown spectroscopy",
+          "specifications": {
+            "type": "ICCD camera",
+            "fast_image_gating_time": "60 ns"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "6A203 requires fast image gating time <= 50 ns for semiconductor/electron-tube cameras; 60 ns is above"
+      }
+    },
+    {
+      "id": "N-19",
+      "request": {
+        "item": {
+          "description": "monochrome CMOS industrial camera for barcode reading",
+          "specifications": {
+            "sensor": "CMOS, monochrome",
+            "active_pixels": "3.2 M",
+            "spectral_sensitivity_peak": "450-700 nm"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "6A003.b requires > 4x10^6 active pixels for monochrome semiconductor cameras; 3.2 M is below"
+      }
+    },
+    {
+      "id": "N-20",
+      "request": {
+        "item": {
+          "description": "uncooled thermal imaging module for predictive maintenance",
+          "specifications": {
+            "sensor": "uncooled microbolometer focal plane array",
+            "resolution": "640x512",
+            "spectral_band": "8-14 um"
+          }
+        }
+      },
+      "expected": {
+        "controlled": false,
+        "regime": "none",
+        "entries": [],
+        "note": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3"
+      }
+    }
+  ]
+}
