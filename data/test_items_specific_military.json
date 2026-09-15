@@ -9,7 +9,7 @@
     "- ML 8 oxidizers, binders and additives: KM 8 covers only explosives/propellants/pyrotechnics meeting its performance parameters (or military pyrotechnics / specially designed military aircraft fuels); simple chemical materials without such parameters are not war materiel.",
     "- ML 16: KM 16 covers only forgings/castings for KM 1, 2, 3, 4, 6, 9, 10, 12 or 19 goods; a forging for an ML-14 good is therefore ML 16.",
     "- ML 21: KM 21 covers only software for goods ON the KM list; software for ML-only goods (ML 14, ML 15, ML 17) is ML 21. (Contrast: fire-control software for a KM 5 weapon system is KM 21 war materiel.)",
-    "- ML 17: KM 17 covers only robots, parametric libraries and nuclear power plants for combat; diving apparatus and construction equipment are ML 17.",
+    "- ML 17: KM 17 covers only robots, parametric libraries and nuclear power plants for combat; diving apparatus is ML 17. Contrast: an armoured mobile crane truck particularly designed for military purposes is a land vehicle under KM 6 war materiel, not ML 17.",
     "Contrast with ML 11: electronic equipment 'particularly designed for combat' (incl. ECM/ECCM and underwater countermeasures) IS war materiel under KM 11 — do not classify such items as specific_military.",
     "Each entry's `request` is a ready-to-send /advise payload (item block only).",
     "`expected` is the ground truth for scoring: controlled flag, regime, control list entries.",
@@ -270,22 +270,6 @@
         "entries": ["GKV Anhang 3 ML17"],
         "entry": "ML17",
         "note": "diving apparatus particularly designed for military purposes, described by ML17.a; KM 17 covers only robots, parametric libraries and nuclear power plants for combat — diving gear is NOT war materiel"
-      }
-    },
-    {
-      "id": "S-17",
-      "request": {
-        "item": {
-          "description": "armoured mobile crane truck particularly designed for military airfield construction and maintenance",
-          "specifications": { "type": "mobile crane", "capacity": "80 t", "designed_for": "military airfield construction", "features": "ballistic protection of cab, rapid deployment" }
-        }
-      },
-      "expected": {
-        "controlled": true,
-        "regime": "specific_military",
-        "entries": ["GKV Anhang 3 ML17"],
-        "entry": "ML17",
-        "note": "construction equipment particularly designed or modified for military purposes, described by ML17.b; not in KMV Annex 1"
       }
     },
     {

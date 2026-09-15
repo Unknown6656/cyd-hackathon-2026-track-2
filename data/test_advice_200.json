@@ -294,29 +294,32 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "boundary: 3A001.a.14 requires > 400 MSPS at 14 bit (stores digitized data); exactly 400 does not exceed it",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 3A001"
+          ],
+          "deciding_text": "14 bit (>=14, <16) with 400 MSa/s > 250 MSPS under 3A001.a.5.a; the 3A001.a.14 threshold (> 400 MSPS) is not met",
           "citations": [
             "GKV Art. 3 Abs. 1",
             "GKV Anhang 2 3A001"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The item is not listed in any control list (not in GKV Anhang 2 or 3, not in KMV Anhang 1, not in GKV Anhang 5), and France is not subject to compulsory measures under the Embargo Act, so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). Nothing in the stated end use triggers the WMD end-use catch-all of GKV Art. 3 Abs. 4. Retain the technical documentation demonstrating non-listing; SECO may require proof that the goods were exported without a licence (GKV Art. 18 Abs. 1).",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The item is a dual-use good listed in GKV Anhang 2 (3A001.a.5.a). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). France is listed in GKV Anhang 7, so the export may proceed without an individual licence if the exporter holds an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 that covers this item and destination; otherwise an individual licence must be obtained. The OGB does not lift the licence requirement of Art. 3 Abs. 1, it substitutes for an individual licence. SECO may at any time require information on the end-destination of goods shipped under a general licence (GKV Art. 18 Abs. 2). SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6.",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Art. 3 Abs. 4",
-            "GKV Art. 18 Abs. 1"
+            "GKV Anhang 2 3A001.a.5.a",
+            "GKV Art. 12 Abs. 1",
+            "GKV Anhang 7"
           ]
         }
       },
       "notes": [
-        "scenario: NC (classification focus, benign transaction)",
-        "item N-06 ground truth: not controlled"
+        "scenario: DU_OGB (classification focus, benign transaction)",
+        "item N-06 ground truth: dual_use"
       ]
     },
     {
@@ -347,29 +350,32 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "boundary: 3A001.a.14 requires > 180 MSPS at 16 bit; exactly 180 does not exceed it",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 3A001"
+          ],
+          "deciding_text": "16 bit with 180 MSa/s > 65 MSPS under 3A001.a.5.a; the 3A001.a.14 threshold (> 180 MSPS) is not met",
           "citations": [
             "GKV Art. 3 Abs. 1",
             "GKV Anhang 2 3A001"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The item is not listed in any control list (not in GKV Anhang 2 or 3, not in KMV Anhang 1, not in GKV Anhang 5), and Netherlands, Kingdom of the is not subject to compulsory measures under the Embargo Act, so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). Nothing in the stated end use triggers the WMD end-use catch-all of GKV Art. 3 Abs. 4. Retain the technical documentation demonstrating non-listing; SECO may require proof that the goods were exported without a licence (GKV Art. 18 Abs. 1).",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The item is a dual-use good listed in GKV Anhang 2 (3A001.a.5.a). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). Netherlands, Kingdom of the is listed in GKV Anhang 7, so the export may proceed without an individual licence if the exporter holds an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 that covers this item and destination; otherwise an individual licence must be obtained. The OGB does not lift the licence requirement of Art. 3 Abs. 1, it substitutes for an individual licence. SECO may at any time require information on the end-destination of goods shipped under a general licence (GKV Art. 18 Abs. 2). SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6.",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Art. 3 Abs. 4",
-            "GKV Art. 18 Abs. 1"
+            "GKV Anhang 2 3A001.a.5.a",
+            "GKV Art. 12 Abs. 1",
+            "GKV Anhang 7"
           ]
         }
       },
       "notes": [
-        "scenario: NC (classification focus, benign transaction)",
-        "item N-07 ground truth: not controlled"
+        "scenario: DU_OGB (classification focus, benign transaction)",
+        "item N-07 ground truth: dual_use"
       ]
     },
     {
@@ -3265,7 +3271,7 @@
           "end_user": null,
           "intermediaries": null,
           "destination": "PK",
-          "stated_end_use": "special forces equipping, government end user",
+          "stated_end_use": "national defence, government end user",
           "routing": [
             "CH",
             "PK"
@@ -3277,30 +3283,30 @@
         "refer_to_authority": false,
         "classification": {
           "controlled": true,
-          "regime": "specific_military",
+          "regime": "war_materiel",
           "entries": [
-            "GKV Anhang 3 ML17"
+            "KMV Anhang 1 KM6"
           ],
-          "deciding_text": "construction equipment particularly designed or modified for military purposes, described by ML17.b; not in KMV Annex 1",
+          "deciding_text": "land vehicle (armoured mobile crane truck) particularly designed or modified for military purposes, described by KM6; KMV Annex 1 prevails over GKV Annex 3 ML17",
           "citations": [
-            "GKV Art. 3 Abs. 1",
-            "GKV Anhang 3 ML17"
+            "KMV Art. 2",
+            "KMV Anhang 1 KM6"
           ]
         },
         "transaction": {
           "verdict": "LICENCE_REQUIRED",
           "authority": "SECO",
-          "answer": "The item is a specific military good listed in GKV Anhang 3 (ML17). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). Pakistan is not listed in GKV Anhang 7, so an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 is not available for this destination; the shipment needs an individual licence (Einzelbewilligung) unless the exporter holds an ausserordentliche Generalexportbewilligung (AGB) under GKV Art. 13 covering it. SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6. For specific military goods, licences are also refused where the UN or partner states prohibit the export (GKG Art. 6 Abs. 2).",
+          "answer": "The item is war materiel under KMV Anhang 1 (KM6). The export of war materiel always requires an individual export licence (Ausfuhrbewilligung) of the Confederation (KMG Art. 17 Abs. 1), whatever the destination; the licensing authority is SECO (KMV Art. 13 Abs. 1). The KMV contains no general export licence, so the export is not covered by any general licence. SECO decides on the basis of the licensing criteria of KMG Art. 22 and 22a, including the mandatory non-licensing cases of Art. 22a Abs. 2.",
           "citations": [
-            "GKV Art. 3 Abs. 1",
-            "GKV Anhang 3 ML17",
-            "GKV Art. 13",
-            "GKG Art. 6"
+            "KMG Art. 17 Abs. 1",
+            "KMV Art. 13 Abs. 1",
+            "KMV Anhang 1 KM6",
+            "KMG Art. 22a"
           ]
         }
       },
       "notes": [
-        "scenario: SM_OMP (verdict focus, non-OGB destination)"
+        "scenario: WM (verdict focus, non-OGB destination)"
       ]
     },
     {
@@ -5117,29 +5123,29 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
         "transaction": {
           "verdict": "LICENCE_REQUIRED",
           "authority": "SECO",
-          "answer": "Although the item is not listed in the control lists, the stated end use ('biological agent production facility, as stated on the counterparty invoice') means the exporter knows or has reason to believe the goods are destined for the development, production or use of weapons of mass destruction (ABC-Waffen, GKV Art. 2 Abs. 1 lit. a). GKV Art. 3 Abs. 4 therefore requires the exporter to request a SECO licence, and the transaction may not proceed without one. Given the WMD end use, SECO is expected to refuse the licence (GKV Art. 6 Abs. 1 lit. a; GKG Art. 6 Abs. 1). Shipping the goods as described is not a lawful option.",
+          "answer": "The item is a dual-use good listed in GKV Anhang 2 (6A002.a.3.f); its export requires a SECO licence (GKV Art. 3 Abs. 1). In addition, the stated end use ('biological agent production facility, as stated on the counterparty invoice') means the exporter knows or has reason to believe the goods are destined for the development, production or use of weapons of mass destruction (ABC-Waffen, GKV Art. 2 Abs. 1 lit. a). GKV Art. 3 Abs. 4 therefore requires the exporter to request a SECO licence, and the transaction may not proceed without one. Given the WMD end use, SECO is expected to refuse the licence (GKV Art. 6 Abs. 1 lit. a; GKG Art. 6 Abs. 1). Shipping the goods as described is not a lawful option.",
           "citations": [
-            "GKV Art. 3 Abs. 4",
-            "GKV Art. 6 Abs. 1",
-            "GKG Art. 6 Abs. 1"
+            "GKV Art. 3 Abs. 1",
+            "GKV Anhang 2 6A002.a.3.f"
           ]
         }
       },
       "notes": [
-        "scenario: WMD (GKV Art. 3 Abs. 4 catch-all; unlisted item, WMD end use)"
+        "scenario: WMD (GKV Art. 3 Abs. 4 catch-all; listed item, WMD end use)"
       ]
     },
     {
@@ -6672,13 +6678,14 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
@@ -7064,18 +7071,18 @@
           "controlled": true,
           "regime": "war_materiel",
           "entries": [
-            "KMV Anhang 1 KM11"
+            "KMV Anhang 1 KM5"
           ],
-          "deciding_text": "electronic equipment particularly designed for combat (air-defence surveillance radar), described by KM11; KMV Annex 1 prevails over GKV Annex 3 ML11",
+          "deciding_text": "surveillance radar (Ortungs-, Erkennungs- oder Identifizierungs-Vorrichtungen) particularly designed for an air-defence system, described by KM5.b.2; KMV Annex 1 prevails over GKV Annex 3 ML11",
           "citations": [
             "KMV Art. 2",
-            "KMV Anhang 1 KM11"
+            "KMV Anhang 1 KM5"
           ]
         },
         "transaction": {
           "verdict": "PROHIBITED",
           "authority": null,
-          "answer": "The item is war materiel (KMV Anhang 1 KM11). Syrian Arab Republic is subject to compulsory measures under the Embargo Act (Ordinance on measures against Syria), which include an embargo on war materiel. The granting of licences is excluded where such compulsory measures have been issued (KMG Art. 25); the export is prohibited (EmbG Art. 1 Abs. 3, EmbG Art. 2 Abs. 1). The transaction must not proceed.",
+          "answer": "The item is war materiel (KMV Anhang 1 KM5). Syrian Arab Republic is subject to compulsory measures under the Embargo Act (Ordinance on measures against Syria), which include an embargo on war materiel. The granting of licences is excluded where such compulsory measures have been issued (KMG Art. 25); the export is prohibited (EmbG Art. 1 Abs. 3, EmbG Art. 2 Abs. 1). The transaction must not proceed.",
           "citations": [
             "KMG Art. 25",
             "EmbG Art. 1 Abs. 3",
@@ -7225,22 +7232,24 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The named consignee, end user and intermediaries do not appear on the public consolidated sanctions list. The item is not listed in any control list (GKV Anhang 2, GKV Anhang 3, KMV Anhang 1, GKV Anhang 5), so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). No compulsory measures under the Embargo Act are triggered by the parties or by the destination United Arab Emirates.",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The named consignee, end user and intermediaries do not appear on the public consolidated sanctions list. The item is a dual-use good listed in GKV Anhang 2 (6A002.a.3.f); its export requires a SECO licence (GKV Art. 3 Abs. 1). No compulsory measures under the Embargo Act are triggered by the parties or by the destination United Arab Emirates.",
           "citations": [
-            "GKV Art. 3 Abs. 1"
+            "GKV Art. 3 Abs. 1",
+            "GKV Anhang 2 6A002.a.3.f"
           ]
         }
       },
@@ -7277,22 +7286,24 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The named consignee, end user and intermediaries do not appear on the public consolidated sanctions list. The item is not listed in any control list (GKV Anhang 2, GKV Anhang 3, KMV Anhang 1, GKV Anhang 5), so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). No compulsory measures under the Embargo Act are triggered by the parties or by the destination United Arab Emirates.",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The named consignee, end user and intermediaries do not appear on the public consolidated sanctions list. The item is a dual-use good listed in GKV Anhang 2 (6A002.a.3.f); its export requires a SECO licence (GKV Art. 3 Abs. 1). No compulsory measures under the Embargo Act are triggered by the parties or by the destination United Arab Emirates.",
           "citations": [
-            "GKV Art. 3 Abs. 1"
+            "GKV Art. 3 Abs. 1",
+            "GKV Anhang 2 6A002.a.3.f"
           ]
         }
       },
@@ -8027,13 +8038,14 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
@@ -10113,37 +10125,39 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The item is not listed in any control list (not in GKV Anhang 2 or 3, not in KMV Anhang 1, not in GKV Anhang 5), and India is not subject to compulsory measures under the Embargo Act, so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). Nothing in the stated end use triggers the WMD end-use catch-all of GKV Art. 3 Abs. 4. Retain the technical documentation demonstrating non-listing; SECO may require proof that the goods were exported without a licence (GKV Art. 18 Abs. 1).",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The item is a dual-use good listed in GKV Anhang 2 (6A002.a.3.f). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). India is not listed in GKV Anhang 7, so an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 is not available for this destination; the shipment needs an individual licence (Einzelbewilligung) unless the exporter holds an ausserordentliche Generalexportbewilligung (AGB) under GKV Art. 13 covering it. SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6.",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Art. 3 Abs. 4",
-            "GKV Art. 18 Abs. 1"
+            "GKV Anhang 2 6A002.a.3.f",
+            "GKV Art. 13",
+            "GKG Art. 6 Abs. 1"
           ]
         },
         "query": {
-          "answer": "No. Where the item does not meet the technical thresholds of a control entry (e.g. 6A003), it is not listed and no GKV licence is required (GKV Art. 3 Abs. 1 is not engaged). Verify the thresholds carefully - entries apply only where the parameter exceeds the stated value - and keep the technical documentation demonstrating non-listing; SECO may require proof of the licence-free export (GKV Art. 18 Abs. 1). The catch-all of GKV Art. 3 Abs. 4 still applies in case of knowledge or reason to believe of a WMD end use.",
+          "answer": "Yes, for this item. Although the camera is below the 6A003.b pixel-count thresholds, a 2D infrared focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm is covered by 6A002.a.3.f, which sets no pixel-count threshold, so the export requires a SECO licence (GKV Art. 3 Abs. 1). Check every applicable entry and its parameters rather than only the first entry whose thresholds are not met, and keep the technical documentation for the licence application. The catch-all of GKV Art. 3 Abs. 4 still applies in case of knowledge or reason to believe of a WMD end use.",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Art. 18 Abs. 1",
+            "GKV Anhang 2 6A002.a.3.f",
             "GKV Art. 3 Abs. 4"
           ]
         }
       },
       "notes": [
-        "scenario: NC + query 26"
+        "scenario: DU_OMP + query 26"
       ]
     },
     {
@@ -10430,29 +10444,31 @@
       "response": {
         "refer_to_authority": false,
         "classification": {
-          "controlled": false,
-          "regime": "none",
-          "entries": [],
-          "deciding_text": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3",
+          "controlled": true,
+          "regime": "dual_use",
+          "entries": [
+            "GKV Anhang 2 6A002"
+          ],
+          "deciding_text": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Anhang 2 6A003",
             "GKV Anhang 2 6A002"
           ]
         },
         "transaction": {
-          "verdict": "NO_LICENCE_REQUIRED",
-          "authority": null,
-          "answer": "The item is not listed in any control list (not in GKV Anhang 2 or 3, not in KMV Anhang 1, not in GKV Anhang 5), and Germany is not subject to compulsory measures under the Embargo Act, so no export licence is required (GKV Art. 3 Abs. 1 is not engaged). Nothing in the stated end use triggers the WMD end-use catch-all of GKV Art. 3 Abs. 4. Retain the technical documentation demonstrating non-listing; SECO may require proof that the goods were exported without a licence (GKV Art. 18 Abs. 1).",
+          "verdict": "LICENCE_REQUIRED",
+          "authority": "SECO",
+          "answer": "The item is a dual-use good listed in GKV Anhang 2 (6A002.a.3.f). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). Germany is listed in GKV Anhang 7, so the export may proceed without an individual licence if the exporter holds an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 that covers this item and destination; otherwise an individual licence must be obtained. The OGB does not lift the licence requirement of Art. 3 Abs. 1, it substitutes for an individual licence. SECO may at any time require information on the end-destination of goods shipped under a general licence (GKV Art. 18 Abs. 2). SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6.",
           "citations": [
             "GKV Art. 3 Abs. 1",
-            "GKV Art. 3 Abs. 4",
-            "GKV Art. 18 Abs. 1"
+            "GKV Anhang 2 6A002.a.3.f",
+            "GKV Art. 12 Abs. 1",
+            "GKV Anhang 7"
           ]
         }
       },
       "notes": [
-        "scenario: NC + benign end-user certificate"
+        "scenario: DU_OGB + benign end-user certificate"
       ]
     },
     {

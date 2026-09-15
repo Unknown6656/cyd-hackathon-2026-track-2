@@ -139,8 +139,53 @@
         "entries": [
           "GKV Anhang 2 3A001"
         ],
-        "entry": "3A001.a.14",
-        "note": "processes digitized data; 16 bit with 200 MSPS > 180 MSPS"
+          "entry": "3A001.a.14",
+          "note": "processes digitized data; 16 bit with 200 MSPS > 180 MSPS"
+        }
+      },
+    {
+      "id": "N-06",
+      "request": {
+        "item": {
+          "description": "ADC IC with on-chip FIFO for sensor interface",
+          "specifications": {
+            "resolution_bits": 14,
+            "sampling_rate": "400 MSa/s",
+            "on_chip_memory": "8 MB SRAM"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "14 bit (>=14, <16) with 400 MSa/s > 250 MSPS under 3A001.a.5.a; the 3A001.a.14 threshold (> 400 MSPS) is not met"
+      }
+    },
+    {
+      "id": "N-07",
+      "request": {
+        "item": {
+          "description": "ADC IC with embedded processor for edge analytics",
+          "specifications": {
+            "resolution_bits": 16,
+            "sampling_rate": "180 MSa/s",
+            "embedded_cpu": "ARM Cortex-M4",
+            "digitized_data_processing": true
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 3A001"
+        ],
+        "entry": "3A001.a.5.a",
+        "note": "16 bit with 180 MSa/s > 65 MSPS under 3A001.a.5.a; the 3A001.a.14 threshold (> 180 MSPS) is not met"
       }
     },
     {
@@ -456,6 +501,28 @@
         ],
         "entry": "6A203",
         "note": "framing camera with recording speed 300,000 frames/s > 225,000 frames/s (6A003.a threshold of 1,000,000 frames/s not reached)"
+      }
+    },
+    {
+      "id": "N-20",
+      "request": {
+        "item": {
+          "description": "uncooled thermal imaging module for predictive maintenance",
+          "specifications": {
+            "sensor": "uncooled microbolometer focal plane array",
+            "resolution": "640x512",
+            "spectral_band": "8-14 um"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "dual_use",
+        "entries": [
+          "GKV Anhang 2 6A002"
+        ],
+        "entry": "6A002.a.3.f",
+        "note": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold"
       }
     }
   ]

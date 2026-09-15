@@ -102,45 +102,6 @@
       }
     },
     {
-      "id": "N-06",
-      "request": {
-        "item": {
-          "description": "ADC IC with on-chip FIFO for sensor interface",
-          "specifications": {
-            "resolution_bits": 14,
-            "sampling_rate": "400 MSa/s",
-            "on_chip_memory": "8 MB SRAM"
-          }
-        }
-      },
-      "expected": {
-        "controlled": false,
-        "regime": "none",
-        "entries": [],
-        "note": "boundary: 3A001.a.14 requires > 400 MSPS at 14 bit (stores digitized data); exactly 400 does not exceed it"
-      }
-    },
-    {
-      "id": "N-07",
-      "request": {
-        "item": {
-          "description": "ADC IC with embedded processor for edge analytics",
-          "specifications": {
-            "resolution_bits": 16,
-            "sampling_rate": "180 MSa/s",
-            "embedded_cpu": "ARM Cortex-M4",
-            "digitized_data_processing": true
-          }
-        }
-      },
-      "expected": {
-        "controlled": false,
-        "regime": "none",
-        "entries": [],
-        "note": "boundary: 3A001.a.14 requires > 180 MSPS at 16 bit; exactly 180 does not exceed it"
-      }
-    },
-    {
       "id": "N-08",
       "request": {
         "item": {
@@ -360,26 +321,7 @@
         "controlled": false,
         "regime": "none",
         "entries": [],
-        "note": "6A003.b requires > 4x10^6 active pixels for monochrome semiconductor cameras; 3.2 M is below"
-      }
-    },
-    {
-      "id": "N-20",
-      "request": {
-        "item": {
-          "description": "uncooled thermal imaging module for predictive maintenance",
-          "specifications": {
-            "sensor": "uncooled microbolometer focal plane array",
-            "resolution": "640x512",
-            "spectral_band": "8-14 um"
-          }
-        }
-      },
-      "expected": {
-        "controlled": false,
-        "regime": "none",
-        "entries": [],
-        "note": "327,680 active pixels is far below the 6A003.b pixel thresholds, and the uncooled microbolometer array is not an FPA covered by 6A002.a.3"
+          "note": "6A003.b requires > 4x10^6 active pixels for monochrome semiconductor cameras; 3.2 M is below"
       }
     }
   ]

@@ -700,6 +700,29 @@
       }
     },
     {
+      "id": "S-17",
+      "request": {
+        "item": {
+          "description": "armoured mobile crane truck particularly designed for military airfield construction and maintenance",
+          "specifications": {
+            "type": "mobile crane",
+            "capacity": "80 t",
+            "designed_for": "military airfield construction",
+            "features": "ballistic protection of cab, rapid deployment"
+          }
+        }
+      },
+      "expected": {
+        "controlled": true,
+        "regime": "war_materiel",
+        "entries": [
+          "KMV Anhang 1 KM6"
+        ],
+        "entry": "KM6",
+        "note": "land vehicle (armoured mobile crane truck) particularly designed or modified for military purposes, described by KM6; KMV Annex 1 prevails over GKV Annex 3 ML17"
+      }
+    },
+    {
       "id": "M-11",
       "request": {
         "item": {
@@ -787,10 +810,10 @@
         "controlled": true,
         "regime": "war_materiel",
         "entries": [
-          "KMV Anhang 1 KM11"
+          "KMV Anhang 1 KM5"
         ],
-        "entry": "KM11",
-        "note": "electronic equipment particularly designed for combat (air-defence surveillance radar), described by KM11; KMV Annex 1 prevails over GKV Annex 3 ML11"
+        "entry": "KM5",
+        "note": "surveillance radar (Ortungs-, Erkennungs- oder Identifizierungs-Vorrichtungen) particularly designed for an air-defence system, described by KM5.b.2; KMV Annex 1 prevails over GKV Annex 3 ML11"
       }
     },
     {
