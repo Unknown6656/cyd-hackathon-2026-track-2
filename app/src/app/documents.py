@@ -73,36 +73,34 @@ class DocumentProcessor:
 
         self.log.info("Done: %d parsed, %d failed", total - failures, failures)
 
-    async def embed_documents(self, folder: str | Path) -> None:
-        folder = Path(folder)
-        if not folder.is_dir():
-            self.log.error("Input directory %s does not exist", folder)
-            return
-
-        json_files = sorted(p for p in folder.glob("*.json"))
-        if not json_files:
-            self.log.warning("No JSON files found in %s", folder)
+    async def embed_documents(self, json_paths: list[Path]) -> None:
+        if not json_paths:
+            self.log.warning("No JSON files to embed")
             return
 
         self.vector_db.create_collection(self.collection_name, settings.vector_size)
 
-        total = len(json_files)
-        for i, json_path in enumerate(json_files, start=1):
+        for i, json_path in enumerate(json_paths, start=1):
             record = json.loads(json_path.read_text(encoding="utf-8"))
-            text = record.get("text", "")
-            if not text.strip():
-                self.log.warning("Skipping %s (empty text)", json_path.name)
-                continue
+            for page in record.get("pages", []):
+                text = page.get("text", "")
+                if not text.strip():
+                    self.log.warning(
+                        "Skipping page %s in %s (empty text)",
+                        page.get("page_number"),
+                        json_path.name,
+                    )
+                    continue
 
-            vector = await self.embedding.embed(text)
-            payload = {
-                "file_name": record.get("file_name"),
-                "file_hash": record.get("file_hash"),
-                "page_number": record.get("page_number"),
-                "text": text,
-            }
-            self.vector_db.add_vector(vector, payload, self.collection_name)
-            self.log.info("(%d/%d) Embedded %s", i, total, json_path.name)
+                vector = await self.embedding.embed(text)
+                payload = {
+                    "file_name": record.get("file_name"),
+                    "file_hash": record.get("file_hash"),
+                    "page_number": page.get("page_number"),
+                    "text": text,
+                }
+                self.vector_db.add_vector(vector, payload, self.collection_name)
+            self.log.info("(%d/%d) Embedded %s", i, len(json_paths), json_path.name)
 
     def _parse_one(self, converter: DocumentConverter, pdf_path: Path) -> None:
         result = converter.convert(str(pdf_path))
@@ -117,17 +115,21 @@ class DocumentProcessor:
                 order.append(page_no)
             pages[page_no].append(text)
 
-        for page_no in order:
-            record = {
-                "file_name": pdf_path.name,
-                "file_hash": file_hash,
-                "page_number": page_no,
-                "text": "\n\n".join(pages[page_no]),
-            }
-            out_path = self.folder_output / f"{file_hash}_{page_no}.json"
-            out_path.write_text(
-                json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"
-            )
+        record = {
+            "file_name": pdf_path.name,
+            "file_hash": file_hash,
+            "pages": [
+                {
+                    "page_number": page_no,
+                    "text": "\n\n".join(pages[page_no]),
+                }
+                for page_no in order
+            ],
+        }
+        out_path = self.folder_output / f"{pdf_path.stem}.json"
+        out_path.write_text(
+            json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
         self.log.info(
             "Parsed %s -> %d page(s) to %s", pdf_path.name, len(order), self.folder_output

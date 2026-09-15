@@ -1,11 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-import http.client
 import logging
 import sys
-import time
-import urllib.request
 from pathlib import Path
 
 from .config import Settings
@@ -22,8 +19,8 @@ logger = logging.getLogger("ingest")
 SOURCES = ["track2_data/control_lists", "track2_data/legislation"]
 
 def run_parse(sources: list[str], data_root: Path, parsed_root: Path) -> int:
-    """Parse each source's PDFs into per-page JSON. No Qdrant or embedding here,
-    so this can run on a machine with plenty of RAM."""
+    """Parse each source's PDFs into one JSON per file. No Qdrant or embedding
+    here, so this can run on a machine with plenty of RAM."""
     rc = 0
     for src in sources:
         data_dir = data_root / src
@@ -48,10 +45,20 @@ def run_embed(parsed_dirs: list[Path]) -> int:
             logger.error("embed: parsed dir %s does not exist; skipping", parsed_dir)
             rc = 1
             continue
+        json_paths = sorted(parsed_dir.glob("*.json"))
+        if not json_paths:
+            logger.error("embed: no JSON files found in %s; skipping", parsed_dir)
+            rc = 1
+            continue
         if db.client.collection_exists(collection):
             db.delete_collection(collection)
-        logger.info("embed: ingesting %s into collection '%s' ...", parsed_dir, collection)
-        asyncio.run(DocumentProcessor(collection, parsed_dir).embed_documents(parsed_dir))
+        logger.info(
+            "embed: ingesting %d file(s) from %s into collection '%s' ...",
+            len(json_paths),
+            parsed_dir,
+            collection,
+        )
+        asyncio.run(DocumentProcessor(collection, parsed_dir).embed_documents(json_paths))
         logger.info("embed: %s done", collection)
     return rc
 
