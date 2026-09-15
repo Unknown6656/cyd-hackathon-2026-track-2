@@ -38,17 +38,6 @@ class AgentDependencies:
     here rather than putting them in global variables.
     """
 
-    vector_db = VectorDB(
-        base_url=config.qdrant_url,
-        api_key=config.qdrant_api_key,
-    )
-
-    embedding_model = EmbeddingModel(
-        base_url=config.openai_base_url,
-        api_key=config.openai_api_key,
-        model_name=config.embedding_model,
-    )
-
     # db: Database
     # settings: Settings
     # calculator: Calculator
@@ -84,7 +73,7 @@ def get_ekn_description_tool(
     """
     Fetches the text description of a good given its EKN identifier.
     """
-    return get_ekn_description(ctx, ekn, config.collection_name)
+    return get_ekn_description(ekn)
 
 @classifier_agent.tool
 def search_ordinances(
@@ -94,7 +83,7 @@ def search_ordinances(
     """
     Searches the legal database of ordinances and returns matching passages.
     """
-    return query_vector_db(ctx, query_text, config.collection_name)
+    return query_vector_db(query_text)
 
 
 internal_flagged_entities = json.loads(internal_flagged_entities_str)

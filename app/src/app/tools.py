@@ -1,15 +1,25 @@
-from pydantic_ai import RunContext
-from app.src.app.agents import AgentDependencies
+from .embed import EmbeddingModel
+from .vector_db import VectorDB
+from .config import settings
+
+vector_db = VectorDB(
+    base_url=settings.qdrant_url,
+    api_key=settings.qdrant_api_key,
+)
+
+embedding_model = EmbeddingModel(
+    base_url=settings.openai_base_url,
+    api_key=settings.openai_api_key,
+    model_name=settings.embedding_model,
+)
 
 def get_ekn_description(
-    ctx: RunContext[AgentDependencies],
     ekn: str,
-    collection_name: str,
 ) -> str:
-    results = ctx.deps.vector_db.filter_for_category(
+    results = vector_db.filter_for_category(
         category_name="EKN",
         filter_value=ekn,
-        collection_name=collection_name,
+        collection_name=settings.collection_name,
     )
 
     if len(results) > 0:
@@ -19,14 +29,12 @@ def get_ekn_description(
     return "Loading description failed"
 
 def query_vector_db(
-    ctx: RunContext[AgentDependencies],
     query_text: str,
-    collection_name: str,
 ) -> list[dict]:
-    embeddings = ctx.deps.embedding_model.embed(query_text)
-    result = ctx.deps.vector_db.search(
+    embeddings = embedding_model.embed(query_text)
+    result = vector_db.search(
         search_vector=embeddings,
-        collection_name=collection_name,
+        collection_name=settings.collection_name,
         limit=20,
     )
 

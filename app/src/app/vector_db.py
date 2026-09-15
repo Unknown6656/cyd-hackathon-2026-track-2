@@ -4,6 +4,7 @@ from qdrant_client.models import MatchValue, QueryResponse, Record, VectorParams
 import uuid
 import logging
 
+from .config import settings
 
 class VectorDB:
     def __init__(self, base_url: str, api_key: str):
@@ -47,7 +48,7 @@ class VectorDB:
 
     def search(self, search_vector: list[float], collection_name: str, limit: int = 1) -> QueryResponse:
         if not self._collection_exists(collection_name):
-            raise RuntimeError("Collection does not exist!")
+            self.create_collection(collection_name, settings.vector_size)
 
         search_results = self.client.query_points(
             collection_name=collection_name,
@@ -58,7 +59,7 @@ class VectorDB:
 
     def filter_for_category(self, category_name: str, filter_value: str, collection_name: str) -> list[Record]:
         if not self._collection_exists(collection_name):
-            raise RuntimeError("Collection does not exist.")
+            self.create_collection(collection_name, settings.vector_size)
 
         result, next_page = self.client.scroll(
             collection_name=collection_name,
