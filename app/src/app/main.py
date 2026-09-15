@@ -30,7 +30,7 @@ async def advise(req: AdviseRequest) -> AdviseResponse:
         )
 
     if req.item is not None:
-        classification_response = await get_classification(req.item)
+        classification_response = await get_classification(req.item, req.documents)
 
     if req.transaction is not None:
         if classification_response is None or req.item is None: # python is dumb

@@ -83,26 +83,51 @@ class DocumentProcessor:
 
         for i, json_path in enumerate(json_paths, start=1):
             record = json.loads(json_path.read_text(encoding="utf-8"))
-            pages = record.get("pages", [])
-            identifiers = extract(pages)
-            for ident in identifiers:
-                text = ident.description
-                if not text.strip():
-                    self.log.warning(
-                        "Skipping page %s in %s (empty text)",
-                        0,
-                        json_path.name,
-                    )
-                    continue
+            pages: list[dict] = record.get("pages", [])
 
-                vector = self.embedding.embed(text)
-                payload = {
-                    "file_name": record.get("file_name"),
-                    "file_hash": record.get("file_hash"),
-                    "EKN": ident.identifier,
-                    "text": text,
-                }
-                self.vector_db.add_vector(vector, payload, self.collection_name)
+            # TODO: jsonpath = folder = collection name/ekn presence
+            if self.folder_name == "control_lists":
+                identifiers = extract(pages)
+                for ident in identifiers:
+                    text = ident.description
+                    if not text.strip():
+                        self.log.warning(
+                            "Skipping page %s in %s (empty text)",
+                            0,
+                            json_path.name,
+                        )
+                        continue
+
+                    vector = self.embedding.embed(text)
+                    payload = {
+                        "file_name": record.get("file_name"),
+                        "file_hash": record.get("file_hash"),
+                        "EKN": ident.identifier,
+                        "text": text,
+                    }
+                    self.vector_db.add_vector(vector, payload, self.collection_name)
+            elif self.folder_name == "legislation":
+                # if folder name is different, we will also be in different collection vector db.
+                for page in pages:
+                    text = page.get("text", "")
+                    if not text.strip():
+                        self.log.warning(
+                            "Skipping page %s in %s (empty text)",
+                            0,
+                            json_path.name,
+                        )
+                        continue
+
+                    vector = self.embedding.embed(text)
+                    payload = {
+                        "file_name": record.get("file_name"),
+                        "file_hash": record.get("file_hash"),
+                        "text": text,
+                    }
+                    self.vector_db.add_vector(vector, payload, self.collection_name)
+            else:
+                raise RuntimeError("unknown folder {self.folder_name} expected control_lists or legislation")
+
             self.log.info("(%d/%d) Embedded %s", i, len(json_paths), json_path.name)
 
     def _parse_one(self, converter: DocumentConverter, pdf_path: Path) -> None:

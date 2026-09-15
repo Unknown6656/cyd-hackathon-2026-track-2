@@ -27,7 +27,7 @@ def get_ekn_description(
     results = vector_db.filter_for_category(
         category_name="EKN",
         filter_value=ekn,
-        collection_name=settings.collection_name,
+        collection_name=settings.ekn_collection_name,
     )
 
     if len(results) > 0:
@@ -37,13 +37,26 @@ def get_ekn_description(
     log.debug(f"Retrieved results: {results}.")
     return "Loading description failed"
 
-def query_vector_db(
+def semantic_search_control_lists(
     query_text: str,
 ) -> list[dict]:
     embeddings = embedding_model.embed(query_text)
     result = vector_db.search(
         search_vector=embeddings,
-        collection_name=settings.collection_name,
+        collection_name=settings.ekn_collection_name,
+        limit=20,
+    )
+
+    log.debug(f"Retrieved results: {result}.")
+    return [point.payload for point in result.points]
+
+def semantic_search_legislation(
+    query_text: str,
+) -> list[dict]:
+    embeddings = embedding_model.embed(query_text)
+    result = vector_db.search(
+        search_vector=embeddings,
+        collection_name=settings.legislation_collection_name,
         limit=20,
     )
 

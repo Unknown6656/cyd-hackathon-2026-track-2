@@ -13,7 +13,7 @@ from .data import internal_flagged_entities_str
 from .models import AdviseClassificationResponse, AdviseTransactionResponse
 from .tools import (
     get_ekn_description,
-    query_vector_db,
+    semantic_search_control_lists,
 )
 
 config = Settings()
@@ -90,7 +90,7 @@ def search_ordinances(
     """
     Searches the legal database of ordinances and returns matching passages.
     """
-    query_result = query_vector_db(query_text) 
+    query_result = semantic_search_control_lists(query_text) 
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
 
