@@ -92,8 +92,7 @@ def search_ordinances(
     query_text: str,
 ) -> list[dict]:
     """
-    Searches the vector database of ordinances and returns a list of metadata.
-    Text content and EKN numbers.
+    Searches the legal database of ordinances and returns matching passages.
     """
     return query_vector_db(ctx, query_text, config.collection_name)
 
