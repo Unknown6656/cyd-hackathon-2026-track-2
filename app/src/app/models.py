@@ -29,6 +29,7 @@ class AdviseRequest(BaseModel):
     item: Item | None = None
     transaction: Transaction | None = None
     documents: list[Document] | None = None
+    model_name: str | None = None
 
 class AdviseQueryResponse(BaseModel):
     answer: str

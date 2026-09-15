@@ -10,7 +10,7 @@ from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
 from .data import internal_flagged_entities_str
-from .models import AdviseClassificationResponse
+from .models import AdviseClassificationResponse, AdviseTransactionResponse
 from .tools import (
     get_ekn_description,
     query_vector_db,
@@ -93,6 +93,15 @@ def search_ordinances(
     query_result = query_vector_db(query_text) 
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
+
+transaction_agent = Agent(
+    build_model(),
+    deps_type=AgentDependencies,
+    output_type=AdviseTransactionResponse,
+    instructions="""
+You assess the given transaction.
+    """,
+)
 
 
 internal_flagged_entities = json.loads(internal_flagged_entities_str)

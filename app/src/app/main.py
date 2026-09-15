@@ -4,19 +4,13 @@ See README.md for the full contract (request blocks, response shape, citations).
 """
 
 from pathlib import Path
-import textwrap
-import json
-import os
 
 from fastapi import FastAPI
 
-from .ingest import run_embed, run_parse
-
+from .backend import get_classification, get_transaction_assessment
 from .config import settings
+from .ingest import run_embed, run_parse
 from .models import *
-from .backend import get_classification, semantic_search
-
-
 
 app = FastAPI(title="Track 2 export control advisor")
 
@@ -31,28 +25,22 @@ async def advise(req: AdviseRequest) -> AdviseResponse:
 
     if req.query is not None:
         query_response = AdviseQueryResponse(
-            answer="TODO: not implemented",
+            answer="not implemented",
             citations=[]
         )
 
     if req.item is not None:
-        classification_context = textwrap.dedent(f'''
-        # Item Description
-        {req.item.description}
-        
-        ## (optional) Item Specification
-        ```json
-        {json.dumps(req.item.specifications, indent=2)}
-        ```
-        ''')
-        classification_response = await get_classification(classification_context)
+        classification_response = await get_classification(req.item)
 
     if req.transaction is not None:
-        transaction_response = AdviseTransactionResponse(
-            verdict=AdviseTransactionVerdict.REFER_TO_AUTHORITY,
-            authority=None,
-            answer="TODO: not implemented",
-            citations=[],
+        if classification_response is None or req.item is None: # python is dumb
+            # TODO: return error response: invalid request item missing
+            raise RuntimeError("'item' missing in request")
+
+        transaction_response = await get_transaction_assessment(
+            req.item,
+            req.transaction,
+            classification_response.regime,
         )
         refer_to_authority = transaction_response.verdict == AdviseTransactionVerdict.REFER_TO_AUTHORITY
 
@@ -85,8 +73,11 @@ def run_ingest_pipeline(force: bool = False) -> None:
 
 @app.post("/ingest")
 def ingest(force: bool = False) -> dict:
-    run_ingest_pipeline(force=force)
-    return {"ok": False}
+    try:
+        run_ingest_pipeline(force=force)
+        return {"ok": True}
+    except Exception:
+        return {"ok": False}
 
 
 @app.get("/health")

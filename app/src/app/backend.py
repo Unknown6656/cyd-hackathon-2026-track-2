@@ -1,38 +1,50 @@
+import json
+import textwrap
 from typing import NewType
 
-from .agents import classifier_agent, diversion_agent
+from .agents import classifier_agent, diversion_agent, transaction_agent
 from .models import (
+    AdviseClassificationRegime,
     AdviseClassificationResponse,
     AdviseTransactionResponse,
     AdviseTransactionVerdict,
+    Item,
+    Transaction,
 )
 
 EKN = NewType("EKN", str)
 
-async def semantic_search(text: str) -> tuple[str, EKN]:
-    # TODO: implement properly
-    return "Long-range missiles are illegal.", EKN("9A012")
-
-async def get_classification(user_input: str) -> AdviseClassificationResponse:
-    result = await classifier_agent.run(user_input)
+async def get_classification(item: Item) -> AdviseClassificationResponse:
+    item_text = item_to_text(item)
+    result = await classifier_agent.run(item_text)
     return result.output
 
 async def is_diversion_risk(user_input: str) -> bool:
     result = await diversion_agent.run(user_input)
     return result.output
 
-async def get_transaction_assessment(user_input: str) -> AdviseTransactionResponse:
-    diversion_result = await is_diversion_risk(user_input)
+async def get_transaction_assessment(
+    item: Item,
+    transaction: Transaction,
+    regime: AdviseClassificationRegime,
+) -> AdviseTransactionResponse:
+    item_text = item_to_text(item)
+    diversion_result = await is_diversion_risk(item_text)
+    transaction_result = await transaction_agent.run(transaction.model_dump_json())
+    transaction_response = transaction_result.output
 
     if diversion_result == True:
-        verdict = AdviseTransactionVerdict.REFER_TO_AUTHORITY
-    else:
-        # TODO
-        verdict = AdviseTransactionVerdict.NO_LICENCE_REQUIRED
+        transaction_response.verdict = AdviseTransactionVerdict.REFER_TO_AUTHORITY
 
-    return AdviseTransactionResponse(
-        verdict=verdict,
-        authority=None, # TODO
-        answer="todo",
-        citations=[]
-    )
+    return transaction_response
+
+def item_to_text(item: Item) -> str:
+    return textwrap.dedent(f'''
+    # Item Description
+    {item.description}
+    
+    ## (optional) Item Specification
+    ```json
+    {json.dumps(item.specifications, indent=2)}
+    ```
+    ''')
