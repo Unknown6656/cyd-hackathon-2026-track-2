@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import json
 from dataclasses import dataclass
 
@@ -14,10 +15,14 @@ from .tools import (
     get_ekn_description,
     query_vector_db,
 )
-from .embed import EmbeddingModel
-from .vector_db import VectorDB
 
 config = Settings()
+
+logging.basicConfig(
+    level=config.log_level,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+log = logging.getLogger(__name__)
 
 
 def build_model() -> OpenAIChatModel:
@@ -73,7 +78,9 @@ def get_ekn_description_tool(
     """
     Fetches the text description of a good given its EKN identifier.
     """
-    return get_ekn_description(ekn)
+    query_result = get_ekn_description(ekn) 
+    log.debug(f"EKN: {ekn}; RETRIEVED: {query_result}")
+    return query_result
 
 @classifier_agent.tool
 def search_ordinances(
@@ -83,7 +90,9 @@ def search_ordinances(
     """
     Searches the legal database of ordinances and returns matching passages.
     """
-    return query_vector_db(query_text)
+    query_result = query_vector_db(query_text) 
+    log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
+    return query_result
 
 
 internal_flagged_entities = json.loads(internal_flagged_entities_str)

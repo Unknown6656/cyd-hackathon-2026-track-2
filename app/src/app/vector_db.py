@@ -75,7 +75,7 @@ class VectorDB:
             with_payload=True,
             with_vectors=True,
         )
-        self.log.info(f"Retrieved result {result}")
+        self.log.debug(f"Retrieved result {result}")
         return result
 
     def _collection_exists(self, collection_name: str) -> bool:

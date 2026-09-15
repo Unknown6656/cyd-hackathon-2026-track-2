@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     embedding_model: str = "qwen3-embedding:8b"
     vector_size: int = 4096
 
-    collection_name: str = "legalstuff"
+    collection_name: str = "control_lists"
 
     model_config = SettingsConfigDict(
         env_file=".env",

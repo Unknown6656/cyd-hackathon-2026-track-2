@@ -2,6 +2,14 @@ from .embed import EmbeddingModel
 from .vector_db import VectorDB
 from .config import settings
 
+import logging
+
+logging.basicConfig(
+    level=settings.log_level,
+    format="%(asctime)s %(levelname)s %(name)s - %(message)s",
+)
+log = logging.getLogger(__name__)
+
 vector_db = VectorDB(
     base_url=settings.qdrant_url,
     api_key=settings.qdrant_api_key,
@@ -26,6 +34,7 @@ def get_ekn_description(
         first = results[0]
         return str(first.payload)
 
+    log.debug(f"Retrieved results: {results}.")
     return "Loading description failed"
 
 def query_vector_db(
@@ -38,4 +47,5 @@ def query_vector_db(
         limit=20,
     )
 
+    log.debug(f"Retrieved results: {result}.")
     return [point.payload for point in result.points]
