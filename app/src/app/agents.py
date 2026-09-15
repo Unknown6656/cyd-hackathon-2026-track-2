@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+import csv
 import logging
 import json
 from dataclasses import dataclass
+from pathlib import Path
 
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from .config import Settings
-from .data import internal_flagged_entities_str
 from .models import AdviseClassificationResponse, AdviseTransactionResponse
 from .tools import (
     get_ekn_description,
@@ -94,17 +95,40 @@ def search_ordinances(
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
 
+country_codes = ""
+with open(f'{Path(config.data_dir)}/country_codes_ISO-3166.csv', newline='') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        country_codes = country_codes + row
+
 transaction_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
     output_type=AdviseTransactionResponse,
-    instructions="""
-You assess the given transaction.
+    instructions=f"""
+You assess the given transaction using all the information you received.
+
+To define the verdict follow these explanations:
+
+    NO_LICENCE_REQUIRED: nothing subjects this shipment to a licence
+    LICENCE_REQUIRED: a licence is needed; name the regime and the authority
+    PROHIBITED: an embargo or absolute prohibition applies
+    REFER_TO_AUTHORITY: the law does not settle it, or the facts are insufficient. Note that if this option is chosen, the top-level refer_to_authority field should also be set to true.
+
+If a license is required the authority is always "SECO", else leave this unspecified.
+
+The answer should reference on the citations used.
+
+For the citations return a list of document names and links to articles, e.g., ["GKV Art. 3"]
+
+The following list contains country codes used in the routing. Check if any of the countries are on an embargo list:
+
+{country_codes}
     """,
 )
 
-
-internal_flagged_entities = json.loads(internal_flagged_entities_str)
+with open(f'{Path(config.corpus_dir)}/track2_data/parties/internal_flagged.json') as f:
+    internal_flagged_entities = json.load(f)
 diversion_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
@@ -113,5 +137,18 @@ diversion_agent = Agent(
     Your job is to check whether the given company is on the flagged list below (return true) or not (return false).
 
     {internal_flagged_entities}
+"""
+)
+
+with open(f'{Path(config.corpus_dir)}/track2_data/parties/public_sanctions.json') as f:
+    public_sanctioned_entities = json.load(f)
+public_sanction_agent = Agent(
+    build_model(),
+    deps_type=AgentDependencies,
+    output_type=bool,
+    instructions=f"""
+    Your job is to check whether the given company is on the flagged list below (return true) or not (return false).
+
+    {public_sanctioned_entities}
 """
 )

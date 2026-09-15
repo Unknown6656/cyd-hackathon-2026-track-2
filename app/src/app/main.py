@@ -40,7 +40,7 @@ async def advise(req: AdviseRequest) -> AdviseResponse:
         transaction_response = await get_transaction_assessment(
             req.item,
             req.transaction,
-            classification_response.regime,
+            classification_response,
         )
         refer_to_authority = transaction_response.verdict == AdviseTransactionVerdict.REFER_TO_AUTHORITY
 

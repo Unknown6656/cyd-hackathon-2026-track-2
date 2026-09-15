@@ -11,8 +11,9 @@ class Settings(BaseSettings):
     #   legislation/    20 PDFs   KMG, KMV, GKG, GKV, EmbG in de/fr/it/en
     #   control_lists/   6 PDFs   dual-use list and Annex 3, de/fr/it only
     #   parties/        public_sanctions.json, internal_flagged.json
-    corpus_dir: str = "/home/user/cyd/code/cyd-hackathon-2026-track-2/corpus" # TODO FIXME
-    output_dir: str = "/home/user/cyd/code/cyd-hackathon-2026-track-2/output" # TODO FIXME
+    corpus_dir: str = "/corpus"
+    output_dir: str = "/output"
+    data_dir: str = "/data"
 
     # app config
     log_level: str = "INFO"
