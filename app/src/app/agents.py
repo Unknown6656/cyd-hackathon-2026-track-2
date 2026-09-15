@@ -102,6 +102,9 @@ with open(f'{Path(config.data_dir)}/country_codes_ISO-3166.csv', newline='') as 
     for row in reader:
         country_codes += ",".join(row) + "\n"
 
+log.info(f"COUNTRY CODES: {country_codes}")
+
+
 transaction_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
@@ -130,6 +133,7 @@ The following list contains country codes used in the routing. Check if any of t
 
 @transaction_agent.tool
 def search_legislation(
+    ctx: RunContext[AgentDependencies],
     query_text: str
 ) -> list[dict]:
     """
@@ -141,6 +145,9 @@ def search_legislation(
 
 with open(f'{Path(config.corpus_dir)}/track2_data/parties/internal_flagged.json') as f:
     internal_flagged_entities = json.load(f)
+
+log.info(f"SECRET: {internal_flagged_entities}")
+
 diversion_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
@@ -154,6 +161,8 @@ diversion_agent = Agent(
 
 with open(f'{Path(config.corpus_dir)}/track2_data/parties/public_sanctions.json') as f:
     public_sanctioned_entities = json.load(f)
+log.info(f"PUBLIC: {public_sanctioned_entities}")
+
 public_sanction_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
