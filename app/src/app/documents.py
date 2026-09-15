@@ -13,6 +13,7 @@ from docling_core.types.doc import TableItem
 from .config import Settings
 from .embed import EmbeddingModel
 from .vector_db import VectorDB
+from .extract_identifiers import extract, IdentifierDescription
 
 settings = Settings()
 
@@ -82,12 +83,14 @@ class DocumentProcessor:
 
         for i, json_path in enumerate(json_paths, start=1):
             record = json.loads(json_path.read_text(encoding="utf-8"))
-            for page in record.get("pages", []):
-                text = page.get("text", "")
+            pages = record.get("pages", [])
+            identifiers = extract(pages)
+            for ident in identifiers:
+                text = ident.description
                 if not text.strip():
                     self.log.warning(
                         "Skipping page %s in %s (empty text)",
-                        page.get("page_number"),
+                        0,
                         json_path.name,
                     )
                     continue
@@ -96,7 +99,7 @@ class DocumentProcessor:
                 payload = {
                     "file_name": record.get("file_name"),
                     "file_hash": record.get("file_hash"),
-                    "page_number": page.get("page_number"),
+                    "EKN": ident.identifier,
                     "text": text,
                 }
                 self.vector_db.add_vector(vector, payload, self.collection_name)

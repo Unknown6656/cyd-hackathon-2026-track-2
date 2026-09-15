@@ -36,7 +36,8 @@ services:
     # CORPUS_DIR at that directory:  CORPUS_DIR=/opt/track2_data docker compose up -d
     volumes:
       - ${CORPUS_DIR:-./corpus}:/corpus:ro
-      - ${OUTPUT_DIR:-./output}:/output:ro
+      - ${OUTPUT_DIR:-./output}:/output
+      - hf_cache:/root/.cache/huggingface
     expose:
       - "8080"
     # Advisory only: Caddy does not wait on this, so removing /health will not
@@ -73,3 +74,4 @@ services:
 
 volumes:
   qdrant_storage:
+  hf_cache:

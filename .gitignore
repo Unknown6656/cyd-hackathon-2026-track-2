@@ -4,6 +4,7 @@ inference.env
 
 # Track data (mounted, never committed)
 corpus/
+output/
 
 # Python
 __pycache__/
