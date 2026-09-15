@@ -16,3 +16,6 @@ venv/
 .DS_Store
 *:Zone.Identifier
 Thumbs.db
+
+# Codegraph
+.codegraph/
