@@ -37,6 +37,7 @@ services:
     volumes:
       - ${CORPUS_DIR:-./corpus}:/corpus:ro
       - ${OUTPUT_DIR:-./output}:/output
+      - ${DATA_DIR:-./data}:/data:ro
       - hf_cache:/root/.cache/huggingface
     expose:
       - "8080"

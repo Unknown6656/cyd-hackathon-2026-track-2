@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     #   parties/        public_sanctions.json, internal_flagged.json
     corpus_dir: str = "/corpus"
     output_dir: str = "/output"
-    data_dir: str = "data"
+    data_dir: str = "/data"
 
     # app config
     log_level: str = "INFO"
