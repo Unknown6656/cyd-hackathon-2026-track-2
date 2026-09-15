@@ -18,17 +18,6 @@ config = Settings()
 
 app = FastAPI(title="Track 2 export control advisor")
 
-# The data is mounted read-only at /corpus:
-#   legislation/    20 PDFs   KMG, KMV, GKG, GKV, EmbG in de/fr/it/en
-#   control_lists/   6 PDFs   dual-use list and Annex 3, de/fr/it only
-#   parties/        public_sanctions.json, internal_flagged.json
-CORPUS_DIR = os.environ.get("CORPUS_DIR", "/corpus")
-
-# Inference endpoint (OpenAI-compatible LiteLLM proxy) — see inference.env.example.
-OPENAI_BASE_URL = config.openai_base_url
-OPENAI_API_KEY = config.openai_api_key
-MODEL = config.model
-
 
 
 @app.post("/advise")
