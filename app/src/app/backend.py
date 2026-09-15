@@ -5,7 +5,6 @@ from typing import NewType
 
 from .agents import classifier_agent, diversion_agent, transaction_agent, public_sanction_agent
 from .models import (
-    AdviseClassificationRegime,
     AdviseClassificationResponse,
     AdviseTransactionResponse,
     AdviseTransactionVerdict,
@@ -46,23 +45,6 @@ async def is_diversion_risk(user_input: str) -> bool:
         result = await public_sanction_agent.run(user_input)
     return result.output
 
-
-async def get_transaction_assessment(
-    item: Item,
-    transaction: Transaction,
-    classification_response: AdviseClassificationResponse,
-) -> AdviseTransactionResponse:
-    diversion_result = await is_diversion_risk(transaction.model_dump_json())
-    user_prompt = ""
-    if diversion_result:
-        user_prompt = user_prompt + "Set the TRANSACTION VERDICT to PROHIBITED due reasons of a previous agent."
-    user_prompt = user_prompt + f"""
-    TRANSACTION: {transaction.model_dump_json()}
-    CLASSIFICATION of Item: {classification_response.model_dump_json()}
-    """
-    transaction_result = await transaction_agent.run(user_prompt)
-    transaction_response = transaction_result.output
-    return transaction_response
 
 async def get_transaction_assessment(
     item: Item,

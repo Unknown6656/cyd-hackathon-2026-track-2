@@ -15,6 +15,7 @@ from .models import AdviseClassificationResponse, AdviseTransactionResponse
 from .tools import (
     get_ekn_description,
     semantic_search_control_lists,
+    semantic_search_legislation,
 )
 
 config = Settings()
@@ -99,7 +100,7 @@ country_codes = ""
 with open(f'{Path(config.data_dir)}/country_codes_ISO-3166.csv', newline='') as f:
     reader = csv.reader(f)
     for row in reader:
-        country_codes = country_codes + row
+        country_codes += ",".join(row) + "\n"
 
 transaction_agent = Agent(
     build_model(),
@@ -126,6 +127,17 @@ The following list contains country codes used in the routing. Check if any of t
 {country_codes}
     """,
 )
+
+@transaction_agent.tool
+def search_legislation(
+    query_text: str
+) -> list[dict]:
+    """
+    Searches the legal database and returns matching passages.
+    """
+    query_result = semantic_search_legislation(query_text) 
+    log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
+    return query_result
 
 with open(f'{Path(config.corpus_dir)}/track2_data/parties/internal_flagged.json') as f:
     internal_flagged_entities = json.load(f)

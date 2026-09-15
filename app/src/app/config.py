@@ -13,12 +13,12 @@ class Settings(BaseSettings):
     #   parties/        public_sanctions.json, internal_flagged.json
     corpus_dir: str = "/corpus"
     output_dir: str = "/output"
-    data_dir: str = "/data"
+    data_dir: str = "data"
 
     # app config
     log_level: str = "INFO"
 
-    qdrant_url: str = "http://localhost:6333" # TODO FIXME
+    qdrant_url: str = "http://qdrant:6333"
     qdrant_api_key: str = ""
     embedding_model: str = "qwen3-embedding:8b"
     vector_size: int = 4096

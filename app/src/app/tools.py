@@ -44,7 +44,7 @@ def semantic_search_control_lists(
     result = vector_db.search(
         search_vector=embeddings,
         collection_name=settings.ekn_collection_name,
-        limit=20,
+        limit=5,
     )
 
     log.debug(f"Retrieved results: {result}.")
@@ -57,7 +57,7 @@ def semantic_search_legislation(
     result = vector_db.search(
         search_vector=embeddings,
         collection_name=settings.legislation_collection_name,
-        limit=20,
+        limit=5,
     )
 
     log.debug(f"Retrieved results: {result}.")
