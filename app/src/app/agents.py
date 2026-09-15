@@ -125,6 +125,8 @@ The answer should reference on the citations used.
 
 For the citations return a list of document names and links to articles, e.g., ["GKV Art. 3"]
 
+You can use the search_legislation tool to search legal databases.
+
 The following list contains country codes used in the routing. Check if any of the countries are on an embargo list:
 
 {country_codes}
@@ -143,7 +145,7 @@ def search_legislation(
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
 
-with open(f'{Path(config.corpus_dir)}/track2_data/parties/internal_flagged.json') as f:
+with open(f'{Path(config.corpus_dir)}/parties/internal_flagged.json') as f:
     internal_flagged_entities = json.load(f)
 
 log.info(f"SECRET: {internal_flagged_entities}")
@@ -159,7 +161,7 @@ diversion_agent = Agent(
 """
 )
 
-with open(f'{Path(config.corpus_dir)}/track2_data/parties/public_sanctions.json') as f:
+with open(f'{Path(config.corpus_dir)}/parties/public_sanctions.json') as f:
     public_sanctioned_entities = json.load(f)
 log.info(f"PUBLIC: {public_sanctioned_entities}")
 
