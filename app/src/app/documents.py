@@ -95,7 +95,7 @@ class DocumentProcessor:
                     )
                     continue
 
-                vector = await self.embedding.embed(text)
+                vector = self.embedding.embed(text)
                 payload = {
                     "file_name": record.get("file_name"),
                     "file_hash": record.get("file_hash"),

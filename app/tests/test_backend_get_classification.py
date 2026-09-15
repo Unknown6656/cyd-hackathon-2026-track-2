@@ -14,6 +14,8 @@ import asyncio
 from typing import Any
 from unittest.mock import patch
 
+import pytest
+
 from app.backend import get_classification
 from app.models import AdviseClassificationRegime, AdviseClassificationResponse
 
@@ -107,3 +109,31 @@ def test_reference_chain_stops_after_second_tool_call() -> None:
     #assert result.controlled is True
     #assert "A4004" in result.citations
     #assert result.deciding_text.strip()
+
+
+def test_real() -> None:
+    user_input = """
+    item = {
+        "description": "standalone high-speed ADC integrated circuit for test and measurement",
+        "specifications": {
+        "resolution_bits": 12,
+        "sampling_rate": "450 MSa/s",
+        "channels": 1
+        }
+    }
+    """
+
+    # expected = {
+    #     "controlled": True,
+    #     "regime": "dual_use",
+    #     "entries": [
+    #         "GKV Anhang 2 3A001"
+    #     ],
+    #     "entry": "3A001.a.5.a",
+    #     "note": "12 bit (>=12, <14) with sampling rate 450 MSa/s > 400 MSPS"
+    # }
+
+    result = asyncio.run(get_classification(user_input))
+
+    print(result)
+    assert False
