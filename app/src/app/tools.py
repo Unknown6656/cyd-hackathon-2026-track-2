@@ -8,7 +8,7 @@ vector_db = VectorDB(
 )
 
 embedding_model = EmbeddingModel(
-    base_url=settings.openai_base_url,
+    base_url=f"{settings.openai_base_url}/embeddings",
     api_key=settings.openai_api_key,
     model_name=settings.embedding_model,
 )
