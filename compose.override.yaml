@@ -1,0 +1,6 @@
+services:
+  proxy:
+    profiles: ["vm"]
+  app:
+    ports:
+      - "8080:8080"
