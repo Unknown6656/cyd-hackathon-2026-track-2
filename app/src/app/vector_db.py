@@ -1,12 +1,11 @@
 from qdrant_client import QdrantClient, models
-from qdrant_client.models import QueryResponse, VectorParams, PointStruct
+from qdrant_client.models import MatchValue, QueryResponse, Record, VectorParams, PointStruct, FieldCondition, Filter
 
 import uuid
 import logging
 
 
 class VectorDB:
-
     def __init__(self, base_url: str, api_key: str):
         self.client = QdrantClient(
             url=base_url, 
@@ -57,6 +56,26 @@ class VectorDB:
         )
         return search_results
 
+    def filter_for_category(self, category_name: str, filter_value: str, collection_name: str) -> list[Record]:
+        if not self._collection_exists(collection_name):
+            raise RuntimeError("Collection does not exist.")
+
+        result, next_page = self.client.scroll(
+            collection_name=collection_name,
+            scroll_filter=Filter(
+                must=[
+                    FieldCondition(
+                        key=category_name,
+                        match=MatchValue(value=filter_value),
+                    )
+                ]
+            ),
+            limit=1,
+            with_payload=True,
+            with_vectors=True,
+        )
+        self.log.info(f"Retrieved result {result}")
+        return result
+
     def _collection_exists(self, collection_name: str) -> bool:
         return self.client.collection_exists(collection_name)
-        

@@ -69,6 +69,30 @@ def test_add_and_search_returns_inserted_vector(db: VectorDB, collection: str) -
     assert point.score == pytest.approx(1.0)
 
 
+def test_filter_for_category_returns_matching_record(db: VectorDB, collection: str) -> None:
+    db.add_vector(make_vector(dim=0), {"category": "fruit", "name": "apple"}, collection)
+    db.add_vector(make_vector(dim=1), {"category": "vegetable", "name": "carrot"}, collection)
+
+    result = db.filter_for_category("category", "fruit", collection)
+
+    assert len(result) == 1
+    assert result[0].payload == {"category": "fruit", "name": "apple"}
+    assert result[0].vector == make_vector(dim=0)
+
+
+def test_filter_for_category_returns_empty_when_no_match(db: VectorDB, collection: str) -> None:
+    db.add_vector(make_vector(dim=0), {"category": "fruit", "name": "apple"}, collection)
+
+    assert db.filter_for_category("category", "drink", collection) == []
+
+
+def test_filter_for_category_raises_when_collection_missing(db: VectorDB) -> None:
+    missing = f"pytest-{uuid.uuid4().hex[:12]}"
+
+    with pytest.raises(RuntimeError, match="Collection does not exist"):
+        db.filter_for_category("category", "fruit", missing)
+
+
 def test_search_ranks_closest_vector_first(db: VectorDB, collection: str) -> None:
     vector_a = make_vector(dim=0)
     vector_b = make_vector(dim=1)
