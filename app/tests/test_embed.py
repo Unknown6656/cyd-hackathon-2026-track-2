@@ -23,7 +23,7 @@ def cosine(a: list[float], b: list[float]) -> float:
 def test_embed_returns_vector() -> None:
     model = make_model()
 
-    embedding = asyncio.run(model.embed("hello world"))
+    embedding = asyncio.run(model.async_embed("hello world"))
 
     assert isinstance(embedding, list)
     assert len(embedding) == settings.vector_size
@@ -33,8 +33,8 @@ def test_embed_returns_vector() -> None:
 def test_embed_is_stable_for_same_text() -> None:
     model = make_model()
 
-    first = asyncio.run(model.embed("the quick brown fox"))
-    second = asyncio.run(model.embed("the quick brown fox"))
+    first = asyncio.run(model.async_embed("the quick brown fox"))
+    second = asyncio.run(model.async_embed("the quick brown fox"))
 
     # The serving stack is not bit-for-bit deterministic, so compare
     # similarity instead of exact equality.
@@ -44,7 +44,7 @@ def test_embed_is_stable_for_same_text() -> None:
 def test_embed_differs_for_different_text() -> None:
     model = make_model()
 
-    fox = asyncio.run(model.embed("the quick brown fox"))
-    wine = asyncio.run(model.embed("a glass of red wine"))
+    fox = asyncio.run(model.async_embed("the quick brown fox"))
+    wine = asyncio.run(model.async_embed("a glass of red wine"))
 
     assert cosine(fox, wine) < 0.999
