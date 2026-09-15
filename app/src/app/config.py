@@ -18,8 +18,11 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     qdrant_url: str = "http://qdrant:6333"
+    qdrant_api_key: str = ""
     embedding_model: str = "qwen3-embedding:8b"
     vector_size: int = 4096
+
+    collection_name: str = "legalstuff"
 
     model_config = SettingsConfigDict(
         env_file=".env",

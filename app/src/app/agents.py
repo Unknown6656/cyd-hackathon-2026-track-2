@@ -12,7 +12,10 @@ from .data import internal_flagged_entities_str
 from .models import AdviseClassificationResponse
 from .tools import (
     get_ekn_description,
+    query_vector_db,
 )
+from .embed import EmbeddingModel
+from .vector_db import VectorDB
 
 config = Settings()
 
@@ -34,6 +37,17 @@ class AgentDependencies:
     Keep things like database clients, API clients, configuration, etc.
     here rather than putting them in global variables.
     """
+
+    vector_db = VectorDB(
+        base_url=config.qdrant_url,
+        api_key=config.qdrant_api_key,
+    )
+
+    embedding_model = EmbeddingModel(
+        base_url=config.openai_base_url,
+        api_key=config.openai_api_key,
+        model_name=config.embedding_model,
+    )
 
     # db: Database
     # settings: Settings
@@ -70,7 +84,18 @@ def get_ekn_description_tool(
     """
     Fetches the text description of a good given its EKN identifier.
     """
-    return get_ekn_description(ekn)
+    return get_ekn_description(ctx, ekn, config.collection_name)
+
+@classifier_agent.tool
+def search_ordinances(
+    ctx: RunContext[AgentDependencies],
+    query_text: str,
+) -> list[dict]:
+    """
+    Searches the vector database of ordinances and returns a list of metadata.
+    Text content and EKN numbers.
+    """
+    return query_vector_db(ctx, query_text, config.collection_name)
 
 
 internal_flagged_entities = json.loads(internal_flagged_entities_str)
