@@ -26,7 +26,7 @@ EKN = NewType("EKN", str)
 
 async def get_classification(
     item: Item,
-    documents: list[Document] | None,
+    documents: list[Document] | None = None,
     model_name: str | None = None,
 ) -> AdviseClassificationResponse:
     item_text = item_to_text(item)

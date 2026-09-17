@@ -1,9 +1,13 @@
 """Real-LLM tests for `app.backend.get_classification`.
 
 These hit the configured endpoint (config.openai_base_url / config.model) with the real
-`classifier_agent`. Only the tool backend is mocked, so we can assert exactly which EKNs
-the model asked for, and in which order. Mocked descriptions contain a further EKN
-reference only where a test wants the agent to follow it.
+`classifier_agent`. Only the corpus backends behind the three tools are mocked — EKN lookup
+(`get_ekn_description`), legislation search (`semantic_search_legislation`) and ordinances /
+control-list search (`semantic_search_control_lists`) — so no vector DB is needed and we can
+assert exactly which EKNs the model asked for, and in which order. The `*_tool` wrappers are
+bound into the agent at import time, so the backend names are what has to be patched.
+Mocked descriptions contain a further EKN reference only where a test wants the agent to
+follow it.
 
 Run with:  uv run pytest tests/test_backend_get_classification.py -s
 """
@@ -12,12 +16,12 @@ from __future__ import annotations
 
 import asyncio
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from app.backend import get_classification
-from app.models import AdviseClassificationRegime, AdviseClassificationResponse
+from app.models import AdviseClassificationRegime, AdviseClassificationResponse, Item
 
 # Simple, self-consistent stand-ins for the real corpus lookups.
 EKN_DETAILS = {
@@ -27,20 +31,41 @@ EKN_DETAILS = {
     "An export licence is required for every destination.",
 }
 
+# One fixed passage per corpus - enough for the model to cite, no vector DB needed.
+LEGISLATION_RESULTS = [
+    {
+        "file_name": "KMV_SR-514.511",
+        "text": "Kriegsmaterial: gepanzerte Glasfaserkabel und optische Verstärker für den "
+        "militärischen Feldeinsatz bedürfen einer Ausfuhrbewilligung.",
+    },
+]
+ORDINANCES_RESULTS = [
+    {
+        "file_name": "GKV_Anhang-1-2_dual-use",
+        "EKN": "A4004",
+        "text": "Dual-Use-Güter: Glasfaserkabel und optische "
+        "Verstärker sind als Dual-Use-Güter gelistet. Für den militärischen Einsatz ist eine Ausfuhrbewilligung nötig.",
+    },
+]
+
 
 def _lookup(details: dict[str, str]) -> Any:
     """Tool backend: unknown EKNs raise instead of silently returning a stub."""
 
     def fetch(ekn: str) -> str:
-        return details[ekn]
+        return details.get(ekn, "no results")
 
     return fetch
 
 
 def _run(description: str, details: dict[str, str] = EKN_DETAILS) -> tuple[AdviseClassificationResponse, Any]:
-    tool = patch("app.agents.get_ekn_description", side_effect=_lookup(details))
-    with tool as mock_fetch:
-        result = asyncio.run(get_classification(description))
+    mock_fetch = MagicMock(side_effect=_lookup(details))
+    with (
+        patch("app.agents.get_ekn_description", mock_fetch),
+        patch("app.agents.semantic_search_legislation", return_value=LEGISLATION_RESULTS),
+        patch("app.agents.semantic_search_control_lists", return_value=ORDINANCES_RESULTS),
+    ):
+        result = asyncio.run(get_classification(Item(description=description, specifications={})))
     return result, mock_fetch
 
 
@@ -112,16 +137,12 @@ def test_reference_chain_stops_after_second_tool_call() -> None:
 
 
 def test_real() -> None:
-    user_input = """
-    item = {
-        "description": "standalone high-speed ADC integrated circuit for test and measurement",
-        "specifications": {
+    description = "standalone high-speed ADC integrated circuit for test and measurement",
+    specifications = {
         "resolution_bits": 12,
         "sampling_rate": "450 MSa/s",
         "channels": 1
-        }
     }
-    """
 
     # expected = {
     #     "controlled": True,
@@ -133,7 +154,8 @@ def test_real() -> None:
     #     "note": "12 bit (>=12, <14) with sampling rate 450 MSa/s > 400 MSPS"
     # }
 
-    result = asyncio.run(get_classification(user_input))
+    item = Item(description=description, specifications=specifications)
+    result = asyncio.run(get_classification(item))
 
     print(result)
     assert False
