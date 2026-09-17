@@ -1,0 +1,81 @@
+%% Updated to match the current code (main @ 7273d44).
+%% Note: doc/ARCHITECTURE.md in the repo is out of date — use these instead.
+
+---
+title: System overview
+---
+graph TD
+    User((Client / Judge / Red team)) -->|HTTPS/TLS| Caddy[Caddy reverse proxy]
+    Caddy -->|HTTP :8080| App[FastAPI app]
+
+    subgraph Application
+        App -->|POST /advise| Main[main.py — request routing]
+        App -->|POST /ingest| Ingest[Ingestion pipeline]
+        Main --> Backend[backend.py]
+    end
+
+    subgraph Agents (pydantic-ai, type-safe outputs)
+        Backend --> Classifier[Classifier agent<br/>controlled? regime? entries? deciding text]
+        Backend --> Txn[Transaction agent<br/>licensing verdict + authority]
+        Backend --> Diversion[Diversion agent<br/>bool vs. confidential flagged list]
+        Diversion -->|if not flagged| Sanctions[Public sanctions agent<br/>bool vs. public list]
+    end
+
+    subgraph RAG tools
+        Classifier --> T1[search_control_lists]
+        Classifier --> T2[search_legislation]
+        Classifier --> T3[get_ekn_description]
+        Txn --> T2
+    end
+
+    T1 --> Qdrant[(Qdrant<br/>control_lists)]
+    T2 --> Qdrant2[(Qdrant<br/>legislation)]
+    T3 --> Qdrant
+    Classifier --> LLM[LiteLLM proxy<br/>Qwen/Qwen3.8-Flash-Next]
+    Txn --> LLM
+
+    Ingest --> Docling[docling PDF parse]
+    Docling --> EKN[Regex EKN state machine<br/>multi-page entries]
+    EKN --> Embed[qwen3-embedding:8b, 4096-dim]
+    Embed --> Qdrant
+    EKN --> Qdrant2
+    Docling -. reads .-. Corpus[(/corpus — 28 legal PDFs, de/fr/it)]
+    LLM <-. paperwork (untrusted, delimited) .-> Main
+    Diversion -. confidential list, prompt-only .-. Parties[(/corpus/parties)]
+
+---
+title: Request lifecycle (POST /advise)
+---
+sequenceDiagram
+    participant C as Client
+    participant M as main.py
+    participant B as backend.py
+    participant A as Agents (LLM)
+    participant Q as Qdrant
+
+    C->>M: POST /advise {item?, transaction?, query?, documents?}
+    opt model_name given
+        M->>M: validate against /models
+    end
+
+    opt item present
+        M->>B: get_classification(item, documents)
+        B->>A: classifier_agent (item + delimited paperwork)
+        A->>Q: semantic search (control lists / legislation), exact EKN lookup
+        Q-->>A: retrieved legal text
+        A-->>B: AdviseClassificationResponse (controlled, regime, entries, deciding_text, citations)
+    end
+
+    opt transaction present (item required)
+        M->>B: get_transaction_assessment(item, transaction, classification)
+        B->>A: diversion_agent (transaction JSON) — bool
+        alt flagged
+            B-->>M: verdict = PROHIBITED, refer_to_authority = true
+        else not flagged
+            B->>A: public_sanction_agent — bool
+            B->>A: transaction_agent (item + txn + classification + country codes)
+            A-->>B: AdviseTransactionResponse (verdict, authority, citations)
+        end
+    end
+
+    M-->>C: AdviseResponse
