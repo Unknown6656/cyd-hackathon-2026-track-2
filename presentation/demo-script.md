@@ -1,4 +1,7 @@
-# Demo script (~90 s)
+# Demo script (~90 s) — optional
+
+> Not part of the deck (the demo slide was cut). Use only if the format allows a
+> live insertion — otherwise keep these requests ready for Q&A.
 
 Base URL (adjust team number): `https://llmhack-team-N.hackathon.intlab.ch`
 

@@ -7,18 +7,19 @@ nothing outside `presentation/` should be touched for this purpose.
 
 | File | What it is |
 |---|---|
-| `outline.md` | Suggested slide-by-slide deck structure with speaker notes (the main proposal) |
-| `facts.md` | Verified numbers and facts to put on slides (corpus size, test suites, stack, etc.) |
+| `template/index.html` | The deck (reveal.js, self-contained, no external assets) — open in a browser |
+| `outline.md` | Slide-by-slide description of the current deck (source of truth) |
+| `facts.md` | Verified numbers and facts used on slides (corpus size, test suites, stack, etc.) |
 | `architecture.mmd` | Mermaid diagrams (system + request lifecycle), updated to match the **current** code |
-| `gaps-and-qa.md` | Honest known gaps, mitigations, and likely judge questions with suggested answers |
-| `demo-script.md` | Suggested live demo / curl walkthrough for the talk |
+| `gaps-and-qa.md` | Known gaps, mitigations, and likely judge questions — **Q&A prep only, not in the deck** |
+| `demo-script.md` | Optional live demo / curl walkthrough — **not in the deck** (demo slide was cut); use if you get time |
 
 ## Status
 
 - [x] Codebase reviewed (main @ `7273d44`)
-- [x] Deck outline drafted
-- [ ] Fill in live test-suite results → add `results/` once we run `scripts/test_api.py` against the deployed endpoint
-- [ ] Pick a deck format (reveal.js / Marp / slides.com) and render `outline.md`
+- [x] Deck built in `template/` (10 slides, no speaker notes) — see `outline.md`
+- [x] Model name: Qwen/Qwen3.8-Flash-Next (per request)
+- [ ] (Optional) Run the test suite against the deployed endpoint and keep the numbers ready for Q&A; save output to `results/`
 - [ ] Update `doc/ARCHITECTURE.md` in the repo — it is **out of date** (see `gaps-and-qa.md`)
 
 ## Key message (elevator pitch)

@@ -1,7 +1,7 @@
 # Gaps, risks & expected Q&A
 
-For internal prep — do **not** present verbatim. Slide 9 of the deck names only the
-top three items; the rest is ammunition for Q&A.
+For internal prep — the deck itself contains no gaps slide (cut for time); use this
+for Q&A only.
 
 ## Honest gaps (from code review @ 7273d44)
 
