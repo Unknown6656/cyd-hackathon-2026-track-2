@@ -27,13 +27,13 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
-def build_model() -> OpenAIChatModel:
+def build_model(model_name: str | None = None) -> OpenAIChatModel:
     """Build an OpenAI-compatible model from the application settings."""
     provider = OpenAIProvider(
         base_url=config.openai_base_url,
         api_key=config.openai_api_key,
     )
-    return OpenAIChatModel(config.model, provider=provider)
+    return OpenAIChatModel(model_name or config.model, provider=provider)
 
 
 @dataclass

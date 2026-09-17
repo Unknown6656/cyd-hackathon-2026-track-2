@@ -3,7 +3,13 @@ import logging
 import textwrap
 from typing import NewType
 
-from .agents import classifier_agent, diversion_agent, transaction_agent, public_sanction_agent
+from .agents import (
+    build_model,
+    classifier_agent,
+    diversion_agent,
+    transaction_agent,
+    public_sanction_agent,
+)
 from .models import (
     AdviseClassificationResponse,
     AdviseTransactionResponse,
@@ -21,6 +27,7 @@ EKN = NewType("EKN", str)
 async def get_classification(
     item: Item,
     documents: list[Document] | None,
+    model_name: str | None = None,
 ) -> AdviseClassificationResponse:
     item_text = item_to_text(item)
     if documents is not None and len(documents) > 0:
@@ -36,13 +43,13 @@ async def get_classification(
 
     log.debug(prompt)
 
-    result = await classifier_agent.run(prompt)
+    result = await classifier_agent.run(prompt, model=build_model(model_name))
     return result.output
 
 
-async def is_diversion_risk(user_input: str) -> bool:
-    if not (result := await diversion_agent.run(user_input)):
-        result = await public_sanction_agent.run(user_input)
+async def is_diversion_risk(user_input: str, model_name: str | None = None) -> bool:
+    if not (result := await diversion_agent.run(user_input, model=build_model(model_name))):
+        result = await public_sanction_agent.run(user_input, model=build_model(model_name))
     return result.output
 
 
@@ -50,8 +57,9 @@ async def get_transaction_assessment(
     item: Item,
     transaction: Transaction,
     classification_response: AdviseClassificationResponse,
+    model_name: str | None = None,
 ) -> AdviseTransactionResponse:
-    diversion_result = await is_diversion_risk(transaction.model_dump_json())
+    diversion_result = await is_diversion_risk(transaction.model_dump_json(), model_name)
     if diversion_result:
         return AdviseTransactionResponse(
             verdict=AdviseTransactionVerdict.PROHIBITED,
@@ -64,7 +72,7 @@ async def get_transaction_assessment(
         TRANSACTION: {transaction.model_dump_json()}
         CLASSIFICATION of Item: {classification_response.model_dump_json()}
         """
-    transaction_result = await transaction_agent.run(user_prompt)
+    transaction_result = await transaction_agent.run(user_prompt, model=build_model(model_name))
     return transaction_result.output
 
 def item_to_text(item: Item) -> str:
