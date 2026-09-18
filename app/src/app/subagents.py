@@ -5,10 +5,14 @@ import logging
 import json
 from dataclasses import dataclass
 from pathlib import Path
+import textwrap
+from typing import Literal
 
-from pydantic_ai import Agent, RunContext, Tool
+from pydantic_ai import Agent, RunContext, Tool, UsageLimits
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai.profiles.openai import OpenAIModelProfile
+from pydantic_ai_harness import SubAgent, SubAgents
 
 from .config import Settings
 from .models import AdviseClassificationResponse, AdviseTransactionResponse
@@ -46,13 +50,17 @@ def search_control_lists_tool(
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
 
+def mk_search_legislation_tool(filter_file: str | None = None):
+    return lambda query_text: search_legislation_tool(query_text, filter_file)
+
 def search_legislation_tool(
-    query_text: str
+    query_text: str,
+    filter_file: str | None = None,
 ) -> list[dict]:
     """
     Searches the legal database and returns matching passages.
     """
-    query_result = semantic_search_legislation(query_text) 
+    query_result = semantic_search_legislation(query_text, filter_file) 
     log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
     return query_result
 
@@ -60,7 +68,7 @@ def get_ekn_description_tool(
     ekn: str,
 ) -> str:
     """
-    Fetches the text description of a good given its EKN identifier.
+    Fetches the text description of a good given its EKN identifier. EKN format: 5B001, 2A010B, etc.
     """
     query_result = get_ekn_description(ekn) 
     log.debug(f"EKN: {ekn}; RETRIEVED: {query_result}")
@@ -75,7 +83,10 @@ def build_model(model_name: str | None = None) -> OpenAIChatModel:
         base_url=config.openai_base_url,
         api_key=config.openai_api_key,
     )
-    return OpenAIChatModel(model_name or config.model, provider=provider)
+    profile = OpenAIModelProfile(
+        openai_chat_supports_multiple_system_messages=False,
+    )
+    return OpenAIChatModel(model_name or config.model, provider=provider, profile=profile)
 
 
 @dataclass
@@ -228,3 +239,84 @@ public_sanction_agent = Agent(
     {public_sanctioned_entities}
 """
 )
+
+@dataclass
+class OutputType:
+    classification: Literal["not_controlled", "dual_use", "specific_military", "war_materiel"]
+    reason: str
+
+@dataclass
+class OutputTypeBool:
+    falls_under_regime: bool
+    reason: str
+    citations: list[str]
+    # TODO: citations
+
+# TODO: should use extracted list only: KMV_SR-514.511_2026-07-01_de_liste-kriegsmaterials.pdf
+def search_special_military_tool(query_text: str):
+    return mk_search_legislation_tool("GKV_Anhang-3_besondere-militaerische-gueter_2025-02-01_de.pdf")(query_text)
+def search_war_materiel_tool(query_text: str):
+    return mk_search_legislation_tool("KMV_SR-514.511_2026-07-01_de.pdf")(query_text)
+
+def run_subagents(prompt: str):
+    dual_use_agent = Agent(
+        build_model(),
+        name="dual_use_agent",
+        description="Determines whether a good falls under dual use classification regime or not.",
+        tools=[Tool(search_control_lists_tool), Tool(get_ekn_description_tool)],
+        output_type=OutputTypeBool,
+        instructions="""
+        Your tools only search sources that contain dual use goods. If your sources describe the good as dual use, it is. Otherwise it is not.
+        You must not perform more than 2 searches and 10 EKN lookups. You may perform fewer.
+        The citation format for e.g. section 3A001.a.5.a from the document "GKV Anhang 1-2" is "GKV Anhang 1-2 3A001".
+        """,
+    )
+    military_agent = Agent(
+        build_model(),
+        name="military_use_agent",
+        description="Determines whether a good falls under military classification regime or not.",
+        tools=[Tool(search_special_military_tool)],
+        output_type=OutputTypeBool,
+        instructions="""
+        Your tools only search sources that contain special military use goods. If your sources describe the good as special military, it is. Otherwise it is not.
+        You must not perform more than 2 searches. You may perform fewer.
+        The citation format for e.g. section 3A001.a.5.a from the document "GKV Anhang 1-2" is "GKV Anhang 1-2 3A001".
+        """,
+    )
+    war_materiel_agent = Agent(
+        build_model(),
+        name="war_materiel_agent",
+        description="Determines whether a good falls under war materiel classification regime or not.",
+        tools=[Tool(search_war_materiel_tool)],
+        output_type=OutputTypeBool,
+        instructions="""
+        Your tools only search sources that contain war materiel goods. If your sources describe the good as war materiel, it is. Otherwise it is not.
+        You must not perform more than 2 searches. You may perform fewer.
+        The citation format for e.g. section 3A001.a.5.a from the document "GKV Anhang 1-2" is "GKV Anhang 1-2 3A001".
+        """,
+    )
+
+    # We use subagents to keep main agent context clean from retrieved source document passages.
+    orchestrator = Agent(
+        build_model(),
+        capabilities=[
+            SubAgents(
+                agents=[
+                    SubAgent(war_materiel_agent, usage_limits=UsageLimits(tool_calls_limit=2)),
+                    SubAgent(military_agent, usage_limits=UsageLimits(tool_calls_limit=2)),
+                    SubAgent(dual_use_agent, usage_limits=UsageLimits(tool_calls_limit=12)),
+                ]
+            )
+        ],
+        output_type=OutputType,
+        instructions=textwrap.dedent("""
+        Your task is to classify a given good into one of the available regimes.
+
+        The highest classification wins. i.e. if the war materiel agent claims the good falls under its regime,
+        use that and disregard whatever the other agents find, then military, then dual use, then not controlled.
+
+        Call all three subagents in paralell.
+        """)
+    )
+    result = orchestrator.run_sync(prompt)
+    return result

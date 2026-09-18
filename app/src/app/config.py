@@ -11,14 +11,14 @@ class Settings(BaseSettings):
     #   legislation/    20 PDFs   KMG, KMV, GKG, GKV, EmbG in de/fr/it/en
     #   control_lists/   6 PDFs   dual-use list and Annex 3, de/fr/it only
     #   parties/        public_sanctions.json, internal_flagged.json
-    corpus_dir: str = "/corpus"
+    corpus_dir: str = "/home/user/cyd/data"
     output_dir: str = "/output"
-    data_dir: str = "/data"
+    data_dir: str = "/home/user/cyd/code/cyd-hackathon-2026-track-2/data"
 
     # app config
     log_level: str = "INFO"
 
-    qdrant_url: str = "http://qdrant:6333"
+    qdrant_url: str = "http://localhost:6333"
     qdrant_api_key: str = ""
     embedding_model: str = "qwen3-embedding:8b"
     vector_size: int = 4096

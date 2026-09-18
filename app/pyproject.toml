@@ -10,6 +10,7 @@ dependencies = [
     "httpx>=0.27",
     "opentelemetry-sdk>=1.44.0",
     "pydantic-ai>=2.43.0",
+    "pydantic-ai-harness>=0.31.0",
     "pydantic-settings>=2.0.0",
     "qdrant-client>=1.19.0",
     "uvicorn>=0.30.0",

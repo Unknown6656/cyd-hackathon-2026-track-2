@@ -52,12 +52,14 @@ def semantic_search_control_lists(
 
 def semantic_search_legislation(
     query_text: str,
+    filter_file: str | None = None
 ) -> list[dict]:
     embeddings = embedding_model.embed(query_text)
     result = vector_db.search(
         search_vector=embeddings,
         collection_name=settings.legislation_collection_name,
         limit=5,
+        filter_file_name=filter_file,
     )
 
     log.debug(f"Retrieved results: {result}.")

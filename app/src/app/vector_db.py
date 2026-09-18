@@ -46,13 +46,23 @@ class VectorDB:
             points=point_structs,
         )
 
-    def search(self, search_vector: list[float], collection_name: str, limit: int = 1) -> QueryResponse:
+    def search(self, search_vector: list[float], collection_name: str, filter_file_name: str | None = None, limit: int = 1) -> QueryResponse:
         if not self._collection_exists(collection_name):
             self.create_collection(collection_name, settings.vector_size)
+
+        query_filter=Filter(
+            must=[
+                FieldCondition(
+                    key="file_name",
+                    match=MatchValue(value=filter_file_name),
+                )
+            ]
+        ) if filter_file_name is not None else None
 
         search_results = self.client.query_points(
             collection_name=collection_name,
             query=search_vector,
+            query_filter=query_filter,
             limit=limit,
         )
         return search_results

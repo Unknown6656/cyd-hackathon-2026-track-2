@@ -18,17 +18,27 @@ SHOW_TOOL_RESULTS = True
 
 
 def short(value, max_len=500):
-    """Pretty-print a value but never let it take over the terminal."""
+    """Pretty-print a value but never let it take over the terminal.
+
+    Values that fit in max_len are returned verbatim; longer ones keep their
+    first and last max_len // 2 characters with a truncation marker between.
+    """
     if value is None:
         return None
 
     if not isinstance(value, str):
         value = json.dumps(value, ensure_ascii=False, default=str)
 
-    if len(value) > max_len:
-        return value[:max_len] + f"... ({len(value)} chars)"
+    if len(value) <= max_len:
+        return value
 
-    return value
+    half = max_len // 2
+    if half == 0:
+        return value[:max_len]
+
+    omitted = len(value) - 2 * half
+
+    return f"{value[:half]}... ({omitted} of {len(value)} chars omitted) ...{value[-half:]}"
 
 
 class PrettySpanExporter(SpanExporter):
@@ -91,7 +101,7 @@ class PrettySpanExporter(SpanExporter):
                 )
 
                 if result is not None:
-                    print(f"     result: {short(result, max_len=2000)}")
+                    print(f"     result: {short(result, max_len=500)}")
 
         # ---- model ------------------------------------------------------
 
@@ -141,32 +151,20 @@ class PrettySpanExporter(SpanExporter):
                 print(f"     tokens: {' '.join(parts)}")
 
             if SHOW_COMPLETIONS:
-                output = first(
-                    attrs,
-                    "gen_ai.output.messages",
+                reasoning = thinking_from_output(
+                    first(attrs, "gen_ai.output.messages")
                 )
-                if output is not None:
-                    print(output)
 
-                reasoning = first(
-                    attrs,
-                    "gen_ai.response.reasoning",
-                    "gen_ai.reasoning",
-                    "gen_ai.response.reasoning_content",
-                )
+                if reasoning is None:
+                    reasoning = first(
+                        attrs,
+                        "gen_ai.response.reasoning",
+                        "gen_ai.reasoning",
+                        "gen_ai.response.reasoning_content",
+                    )
 
                 if reasoning is not None:
-                    print(f"     reasoning: {short(reasoning, max_len=1000)}")
-
-                completion = first(
-                    attrs,
-                    "gen_ai.response.content",
-                    "gen_ai.completion",
-                    "gen_ai.response.text",
-                )
-
-                if completion is not None:
-                    print(f"     completion: {short(completion, max_len=1000)}")
+                    print(f"     reasoning: {short(reasoning, max_len=500)}")
 
 
         # ---- everything else -------------------------------------------
@@ -176,6 +174,47 @@ class PrettySpanExporter(SpanExporter):
 
     def shutdown(self):
         pass
+
+
+def thinking_from_output(value):
+    """Pull only the reasoning/thinking parts out of gen_ai.output.messages."""
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (ValueError, TypeError):
+            return None
+
+    if value is None:
+        return None
+
+    messages = value if isinstance(value, list) else [value]
+
+    chunks = []
+    for message in messages:
+        if not isinstance(message, dict):
+            continue
+
+        parts = message.get("parts", message.get("content"))
+        if not isinstance(parts, list):
+            continue
+
+        for part in parts:
+            if not isinstance(part, dict):
+                continue
+
+            if part.get("type") not in ("thinking", "reasoning", "redacted_thinking"):
+                continue
+
+            content = part.get("content")
+            if not content:
+                continue
+
+            if not isinstance(content, str):
+                content = json.dumps(content, ensure_ascii=False, default=str)
+
+            chunks.append(content)
+
+    return "\n".join(chunks) if chunks else None
 
 
 def first(attrs, *keys):

@@ -1,0 +1,306 @@
+{
+  "task": "Extracted /advise request + expected response payloads for selected test item IDs",
+  "item_ids": [
+    "C-16",
+    "C-14",
+    "N-20",
+    "S-05",
+    "S-08",
+    "S-17"
+  ],
+  "notes": [
+    "item_entries: from data/test_items_*.json - 'request' is a ready-to-send /advise payload (item block only); these files carry no full response, only 'expected_classification' (the ground truth for the classification block).",
+    "advice_cases: from data/test_advice_200.json - complete request (item + transaction) plus the expected AdviseResponse.",
+    "Only S-05 (ADV-029) and S-08 (ADV-032) appear in data/test_advice_200.json; C-14, C-16, N-20 and S-17 exist only as item-level entries (no full /advise response exists for them in the source data)."
+  ],
+  "items": [
+    {
+      "id": "C-16",
+      "item_entries": [
+        {
+          "source": "data/test_items_dual_use_controlled.json",
+          "request": {
+            "item": {
+              "description": "electronic framing camera for shock wave visualization",
+              "specifications": {
+                "type": "framing camera",
+                "recording_speed": "1200000 frames/s",
+                "frame_exposure": "1 us"
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "dual_use",
+            "entries": [
+              "GKV Anhang 2 6A003"
+            ],
+            "entry": "6A003.a",
+            "note": "electronic framing camera with recording speed 1,200,000 frames/s > 1,000,000 frames/s"
+          }
+        }
+      ],
+      "advice_cases": []
+    },
+    {
+      "id": "C-14",
+      "item_entries": [
+        {
+          "source": "data/test_items_dual_use_controlled.json",
+          "request": {
+            "item": {
+              "description": "ruggedized ADC module for missile guidance and control system test and evaluation",
+              "specifications": {
+                "resolution_bits": 8,
+                "sampling_rate": "100 MSa/s",
+                "ruggedization": "MIL-STD-810H, MIL-STD-461G",
+                "intended_application": "missile T&E"
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "dual_use",
+            "entries": [
+              "GKV Anhang 2 3A101"
+            ],
+            "entry": "3A101.a",
+            "note": "ADC suitable for missiles and ruggedized to military specifications, controlled regardless of the 3A001.a.5.a thresholds (8 bit / 100 MSa/s is below them)"
+          }
+        }
+      ],
+      "advice_cases": []
+    },
+    {
+      "id": "N-20",
+      "item_entries": [
+        {
+          "source": "data/test_items_dual_use_controlled.json",
+          "request": {
+            "item": {
+              "description": "uncooled thermal imaging module for predictive maintenance",
+              "specifications": {
+                "sensor": "uncooled microbolometer focal plane array",
+                "resolution": "640x512",
+                "spectral_band": "8-14 um"
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "dual_use",
+            "entries": [
+              "GKV Anhang 2 6A002"
+            ],
+            "entry": "6A002.a.3.f",
+            "note": "non-space-qualified 2D IR focal-plane array based on microbolometer material with unfiltered response in 8 000-14 000 nm (8-14 um), covered by 6A002.a.3.f without any pixel-count threshold"
+          }
+        }
+      ],
+      "advice_cases": []
+    },
+    {
+      "id": "S-05",
+      "item_entries": [
+        {
+          "source": "data/test_items_specific_military.json",
+          "request": {
+            "item": {
+              "description": "portable field identification kit for chemical and biological agents with spectrometric detector",
+              "specifications": {
+                "type": "CBRN detection equipment",
+                "methods": "spectrometric + colorimetric",
+                "portable": true,
+                "military": true
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "specific_military",
+            "entries": [
+              "GKV Anhang 3 ML7"
+            ],
+            "entry": "ML7",
+            "note": "equipment particularly designed for detection/identification of chemical or biological agents, described by ML7.g; not in KMV Annex 1"
+          }
+        }
+      ],
+      "advice_cases": [
+        {
+          "source": "data/test_advice_200.json",
+          "case_id": "ADV-029",
+          "request": {
+            "item": {
+              "description": "portable field identification kit for chemical and biological agents with spectrometric detector",
+              "specifications": {
+                "type": "CBRN detection equipment",
+                "methods": "spectrometric + colorimetric",
+                "portable": true,
+                "military": true
+              }
+            },
+            "transaction": {
+              "consignee": "Galathea Ship Services S.A.",
+              "end_user": null,
+              "intermediaries": null,
+              "destination": "AU",
+              "stated_end_use": "national defence research and development, government end user",
+              "routing": [
+                "CH",
+                "AU"
+              ],
+              "value_chf": 181969
+            }
+          },
+          "response": {
+            "refer_to_authority": false,
+            "classification": {
+              "controlled": true,
+              "regime": "specific_military",
+              "entries": [
+                "GKV Anhang 3 ML7"
+              ],
+              "deciding_text": "equipment particularly designed for detection/identification of chemical or biological agents, described by ML7.g; not in KMV Annex 1",
+              "citations": [
+                "GKV Art. 3 Abs. 1",
+                "GKV Anhang 3 ML7"
+              ]
+            },
+            "transaction": {
+              "verdict": "LICENCE_REQUIRED",
+              "authority": "SECO",
+              "answer": "The item is a specific military good listed in GKV Anhang 3 (ML7). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). Australia is listed in GKV Anhang 7, so the export may proceed without an individual licence if the exporter holds an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 that covers this item and destination; otherwise an individual licence must be obtained. The OGB does not lift the licence requirement of Art. 3 Abs. 1, it substitutes for an individual licence. SECO may at any time require information on the end-destination of goods shipped under a general licence (GKV Art. 18 Abs. 2). SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6. For specific military goods, licences are also refused where the UN or partner states prohibit the export (GKG Art. 6 Abs. 2).",
+              "citations": [
+                "GKV Art. 3 Abs. 1",
+                "GKV Anhang 3 ML7",
+                "GKV Art. 12 Abs. 1",
+                "GKV Anhang 7",
+                "GKG Art. 6 Abs. 2"
+              ]
+            }
+          },
+          "notes": [
+            "scenario: SM_OGB (classification focus, benign transaction)",
+            "item S-05 ground truth: specific_military"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-08",
+      "item_entries": [
+        {
+          "source": "data/test_items_specific_military.json",
+          "request": {
+            "item": {
+              "description": "ferrocene, 100 kg, combustion catalyst additive for solid propellants",
+              "specifications": {
+                "material": "ferrocene",
+                "quantity": "100 kg",
+                "use": "combustion modifier, solid propellant"
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "specific_military",
+            "entries": [
+              "GKV Anhang 3 ML8"
+            ],
+            "entry": "ML8",
+            "note": "additive for propellants, described by ML8.f; KM 8 does not list such additives as war materiel"
+          }
+        }
+      ],
+      "advice_cases": [
+        {
+          "source": "data/test_advice_200.json",
+          "case_id": "ADV-032",
+          "request": {
+            "item": {
+              "description": "ferrocene, 100 kg, combustion catalyst additive for solid propellants",
+              "specifications": {
+                "material": "ferrocene",
+                "quantity": "100 kg",
+                "use": "combustion modifier, solid propellant"
+              }
+            },
+            "transaction": {
+              "consignee": "Alpina Optic Instruments SA",
+              "end_user": null,
+              "intermediaries": null,
+              "destination": "FR",
+              "stated_end_use": "defence propulsion research, government end user",
+              "routing": [
+                "CH",
+                "FR"
+              ],
+              "value_chf": 439981
+            }
+          },
+          "response": {
+            "refer_to_authority": false,
+            "classification": {
+              "controlled": true,
+              "regime": "specific_military",
+              "entries": [
+                "GKV Anhang 3 ML8"
+              ],
+              "deciding_text": "additive for propellants, described by ML8.f; KM 8 does not list such additives as war materiel",
+              "citations": [
+                "GKV Art. 3 Abs. 1",
+                "GKV Anhang 3 ML8"
+              ]
+            },
+            "transaction": {
+              "verdict": "LICENCE_REQUIRED",
+              "authority": "SECO",
+              "answer": "The item is a specific military good listed in GKV Anhang 3 (ML8). Exporting it requires a SECO licence (GKV Art. 3 Abs. 1). France is listed in GKV Anhang 7, so the export may proceed without an individual licence if the exporter holds an ordentliche Generalexportbewilligung (OGB) under GKV Art. 12 Abs. 1 that covers this item and destination; otherwise an individual licence must be obtained. The OGB does not lift the licence requirement of Art. 3 Abs. 1, it substitutes for an individual licence. SECO may at any time require information on the end-destination of goods shipped under a general licence (GKV Art. 18 Abs. 2). SECO examines the application under the refusal grounds of GKV Art. 6 / GKG Art. 6. For specific military goods, licences are also refused where the UN or partner states prohibit the export (GKG Art. 6 Abs. 2).",
+              "citations": [
+                "GKV Art. 3 Abs. 1",
+                "GKV Anhang 3 ML8",
+                "GKV Art. 12 Abs. 1",
+                "GKV Anhang 7",
+                "GKG Art. 6 Abs. 2"
+              ]
+            }
+          },
+          "notes": [
+            "scenario: SM_OGB (classification focus, benign transaction)",
+            "item S-08 ground truth: specific_military"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S-17",
+      "item_entries": [
+        {
+          "source": "data/test_items_war_materiel.json",
+          "request": {
+            "item": {
+              "description": "armoured mobile crane truck particularly designed for military airfield construction and maintenance",
+              "specifications": {
+                "type": "mobile crane",
+                "capacity": "80 t",
+                "designed_for": "military airfield construction",
+                "features": "ballistic protection of cab, rapid deployment"
+              }
+            }
+          },
+          "expected_classification": {
+            "controlled": true,
+            "regime": "war_materiel",
+            "entries": [
+              "KMV Anhang 1 KM6"
+            ],
+            "entry": "KM6",
+            "note": "land vehicle (armoured mobile crane truck) particularly designed or modified for military purposes, described by KM6; KMV Annex 1 prevails over GKV Annex 3 ML17"
+          }
+        }
+      ],
+      "advice_cases": []
+    }
+  ]
+}
