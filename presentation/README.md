@@ -13,6 +13,7 @@ nothing outside `presentation/` should be touched for this purpose.
 | `architecture.mmd` | Mermaid diagrams (system + request lifecycle), updated to match the **current** code |
 | `gaps-and-qa.md` | Known gaps, mitigations, and likely judge questions — **Q&A prep only, not in the deck** |
 | `demo-script.md` | Optional live demo / curl walkthrough — **not in the deck** (demo slide was cut); use if you get time |
+| `logo.jpg` | Team logo (from repo root), shown on the title and thank-you slides |
 
 ## Status
 
