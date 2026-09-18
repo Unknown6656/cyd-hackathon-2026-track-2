@@ -111,7 +111,7 @@ KMV Annex 1 (KMV_SR-514.511) describes war materiel. To search this annex, use t
 
 GKV Annex 3 (GKV_Anhang-3_besondere-militaerische-gueter) describes special military equipment. To search this annex, use the `search_legislation` tool.
 
-GKV Annex 1 and 2 (GKV_Anhang-1-2_dual-use) are control lists that describe dual use goods (military or civil). To search this annex, use the `search_ordinances` tool.
+GKV Annex 1 and 2 (GKV_Anhang-1-2_dual-use) are control lists that describe dual use goods (military or civil). To search this annex, use the `search_control_lists` tool.
 
 If you don't find the item in your corpus, it is not controlled.
 
