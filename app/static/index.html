@@ -122,6 +122,20 @@
   }
   .add-btn:hover { border-color: var(--accent); background: #f3f7ff; }
 
+  .examples-label { font-size: .8rem; color: var(--muted); margin: 0 0 6px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .example-btn {
+    border: 1px solid var(--line);
+    background: #fafbfc;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font: inherit;
+    font-size: .82rem;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .example-btn:hover { border-color: var(--accent); color: var(--accent); background: #f3f7ff; }
+
   .doc-block {
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -235,6 +249,8 @@
 <main>
   <!-- ============ form column ============ -->
   <section class="panel" aria-label="Advise request">
+    <p class="examples-label">Try a preconfigured example</p>
+    <div class="examples" id="examples"></div>
     <details open>
       <summary>Item <small>what is being exported</small></summary>
       <div class="details-body">
@@ -581,6 +597,140 @@ function renderResults(data) {
   if (!root.children.length) {
     root.appendChild(el("div", "placeholder", "The server returned an empty response — nothing to display."));
   }
+}
+
+/* ---------- preconfigured demo examples ----------
+   Each example is exactly an AdviseRequest; filling one resets the form and
+   then populates every field the example defines. */
+
+const EXAMPLES = [
+  {
+    key: "thermal-module-ae",
+    label: "Thermal module → AE",
+    data: {
+      query: "Do we need a licence to ship this to Brazil?",
+      item: {
+        description: "uncooled thermal imaging module",
+        specifications: { resolution: "640x512", spectral_band: "8-14 um" },
+      },
+      transaction: {
+        consignee: "Meridian Freight Solutions FZE",
+        end_user: "Al-Nahda Industrial Services",
+        intermediaries: ["Helvetia Export Partners GmbH"],
+        destination: "AE",
+        stated_end_use: "industrial furnace monitoring",
+        routing: ["CH", "DE", "AE"],
+        value_chf: 84000,
+      },
+      documents: [
+        {
+          type: "end_user_certificate",
+          text: "End-User Certificate: The undersigned certifies that the goods described herein will be used exclusively for industrial furnace monitoring at the facility of Al-Nahda Industrial Services in the United Arab Emirates and will not be re-exported, transferred or diverted to any end user or destination other than that stated, in accordance with applicable export control requirements.",
+        },
+      ],
+    },
+  },
+  {
+    key: "long-range-uas-ru",
+    label: "Long-range UAS → RU",
+    data: {
+      item: {
+        description: "Long-range fixed-wing unmanned aerial vehicle with electro-optical camera, ready for assembly from kit",
+        specifications: { range_km: 40, endurance_min: 120, camera: "EO, 12x optical zoom" },
+      },
+      transaction: {
+        consignee: "Nordwind Handels AG",
+        end_user: "Stavka Agro Services",
+        destination: "RU",
+        stated_end_use: "agricultural surveying",
+        routing: ["CH", "RU"],
+        value_chf: 155000,
+      },
+      documents: [
+        {
+          type: "catalogue_page",
+          text: "Model XF-40 Fixed-Wing UAS — maximum flight range 40 km, endurance 120 min, payload 2 kg, electro-optical gimbal camera with 12x optical zoom, automatic take-off and landing. Sold as complete kit.",
+        },
+      ],
+    },
+  },
+  {
+    key: "coffee-grinder-civil",
+    label: "Coffee grinder (item only)",
+    data: {
+      item: {
+        description: "Stainless-steel office coffee grinder, 230 V, 300 W",
+        specifications: { power_w: 300, voltage_v: 230 },
+      },
+    },
+  },
+];
+
+function clearForm() {
+  qsa("input[type=text], input[type=number], textarea").forEach((n) => (n.value = ""));
+  for (const id of ["specs-rows", "tx-intermediaries", "tx-routing", "docs-blocks"]) $(id).textContent = "";
+  qsa("details").forEach((d, i) => (d.open = i === 0)); // Item stays open, as on load
+}
+
+function fillExample(example) {
+  const data = example.data;
+  clearForm();
+  clearError();
+  $("results").textContent = "";
+  const placeholder = el("div", "placeholder");
+  placeholder.append("Fill in at least one block and press ", el("strong", null, "Analyse"), ".");
+  $("results").appendChild(placeholder);
+
+  if (data.query) $("query").value = data.query;
+
+  if (data.item) {
+    $("item-description").value = data.item.description || "";
+    for (const [k, v] of Object.entries(data.item.specifications || {})) {
+      addSpecRow();
+      const rows = qsa(".row", $("specs-rows"));
+      const row = rows[rows.length - 1];
+      row.querySelector(".spec-key").value = k;
+      row.querySelector(".spec-value").value = String(v);
+    }
+  }
+
+  if (data.transaction) {
+    const tx = data.transaction;
+    for (const f of ["consignee", "end_user", "destination", "stated_end_use"]) {
+      if (tx[f]) $("tx-" + f).value = tx[f];
+    }
+    if (tx.value_chf !== undefined) $("tx-value_chf").value = tx.value_chf;
+    for (const [name, containerId] of [["intermediaries", "tx-intermediaries"], ["routing", "tx-routing"]]) {
+      for (const v of tx[name] || []) {
+        addListItem(containerId);
+        $(containerId).lastElementChild.querySelector("input").value = v;
+      }
+    }
+  }
+
+  for (const doc of data.documents || []) {
+    addDocBlock();
+    const blocks = qsa(".doc-block");
+    const b = blocks[blocks.length - 1];
+    if (doc.type) b.querySelector(".doc-type").value = doc.type;
+    b.querySelector(".doc-text").value = doc.text;
+  }
+
+  // Open the sections that received data.
+  const sections = qsa("details");
+  if (data.item) sections[0].open = true;
+  if (data.transaction) sections[1].open = true;
+  if (data.query) sections[2].open = true;
+  if (data.documents && data.documents.length) sections[3].open = true;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+for (const example of EXAMPLES) {
+  const btn = el("button", "example-btn", example.label);
+  btn.type = "button";
+  btn.addEventListener("click", () => fillExample(example));
+  $("examples").appendChild(btn);
 }
 
 /* ---------- init ---------- */
