@@ -28,10 +28,18 @@
     line-height: 1.5;
   }
   header {
-    padding: 20px 28px;
+    padding: 14px 28px;
     background: var(--surface);
     border-bottom: 1px solid var(--line);
   }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .header-logo { height: 56px; width: auto; flex: 0 0 auto; }
   header h1 { margin: 0; font-size: 1.25rem; font-weight: 650; }
   header p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
   main {
@@ -243,8 +251,13 @@
 </head>
 <body>
 <header>
-  <h1>Export Control Advisor</h1>
-  <p>Classify an item and assess whether a transaction requires a licence.</p>
+  <div class="header-inner">
+    <img class="header-logo" src="/logo-purple.png" alt="BouncyPurple Industries">
+    <div>
+      <h1>Export Control Advisor</h1>
+      <p>Classify an item and assess whether a transaction requires a licence.</p>
+    </div>
+  </div>
 </header>
 <main>
   <!-- ============ form column ============ -->

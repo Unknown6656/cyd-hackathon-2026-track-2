@@ -27,3 +27,10 @@ def test_index_serves_html() -> None:
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
     assert "advise" in response.text
+
+
+def test_logo_serves_png() -> None:
+    response = client.get("/logo-purple.png")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"
+    assert response.content[:8] == b"\x89PNG\r\n\x1a\n"

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 from .backend import get_classification, get_transaction_assessment
 from .config import settings
@@ -17,13 +17,19 @@ from .models import *
 
 app = FastAPI(title="Track 2 export control advisor")
 
-_STATIC_INDEX = Path(__file__).resolve().parent.parent.parent / "static" / "index.html"
+_STATIC_DIR = Path(__file__).resolve().parent.parent.parent / "static"
 
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
     """Serve the single-page advise UI."""
-    return _STATIC_INDEX.read_text(encoding="utf-8")
+    return (_STATIC_DIR / "index.html").read_text(encoding="utf-8")
+
+
+@app.get("/logo-purple.png")
+def logo() -> FileResponse:
+    """Serve the BouncyPurple Industries logo used in the UI header."""
+    return FileResponse(_STATIC_DIR / "logo-purple.png", media_type="image/png")
 
 
 _MODELS_TTL_SECONDS = 300
