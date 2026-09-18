@@ -18,8 +18,7 @@ from .config import Settings
 from .models import AdviseClassificationResponse, AdviseTransactionResponse
 from .tools import (
     get_ekn_description,
-    semantic_search_control_lists,
-    semantic_search_legislation,
+    semantic_search,
 )
 
 config = Settings()
@@ -40,29 +39,60 @@ instrument_all()
 ###########################################################
 # Tools
 ###########################################################
-def search_control_lists_tool(
-    query_text: str,
-) -> list[dict]:
-    """
-    Searches the legal database of ordinances and returns matching passages.
-    """
-    query_result = semantic_search_control_lists(query_text) 
-    log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
-    return query_result
+# Corpus collections, i.e. the folders that were ingested by app.ingest.
+CONTROL_LISTS = "control_lists"
+LEGISLATION = "legislation"
 
-def mk_search_legislation_tool(filter_file: str | None = None):
-    return lambda query_text: search_legislation_tool(query_text, filter_file)
 
-def search_legislation_tool(
-    query_text: str,
-    filter_file: str | None = None,
-) -> list[dict]:
+def search_corpus(
+    tool_name: str,
+    description: str,
+    collection: str = CONTROL_LISTS,
+    file_name: str | None = None,
+) -> Tool:
+    """Build a semantic search tool scoped to one collection and optionally one file inside it.
+
+    The tool signature exposed to the model is always `search(query_text)`, i.e. the scope is
+    fixed by us, so the model can never search the wrong corpus.
     """
-    Searches the legal database and returns matching passages.
-    """
-    query_result = semantic_search_legislation(query_text, filter_file) 
-    log.debug(f"QUERY: {query_text}; RETRIEVED: {query_result}")
-    return query_result
+
+    def search_tool(query_text: str) -> list[dict]:
+        query_result = semantic_search(query_text, collection_name=collection, filter_file_name=file_name)
+        log.debug(f"TOOL: {tool_name}; QUERY: {query_text}; RETRIEVED: {query_result}")
+        return query_result
+
+    return Tool(search_tool, name=tool_name, description=description)
+
+
+# Whole corpora.
+search_control_lists_tool = search_corpus(
+    "search_control_lists",
+    "Searches the dual-use control lists (GKV Annex 1 and 2) and returns matching passages.",
+    collection=CONTROL_LISTS,
+)
+search_legislation_tool = search_corpus(
+    "search_legislation",
+    "Searches the legal database (KMG, KMV, GKG, GKV, EmbG) and returns matching passages.",
+    collection=LEGISLATION,
+)
+
+# Single documents, for the per-regime subagents.
+# TODO: war materiel should probably use the extracted list only: KMV_SR-514.511_2026-07-01_de_liste-kriegsmaterials.pdf
+search_annex3_special_military_tool = search_corpus(
+    "search_special_military",
+    "Searches GKV Annex 3 (special military goods) and returns matching passages.",
+    # Page-chunked in `legislation`; its entries are numbered ML1a, ML4, ... so the
+    # EKN identifier chunker used for `control_lists` yields nothing for this file.
+    collection=LEGISLATION,
+    file_name="GKV_Anhang-3_besondere-militaerische-gueter_2025-02-01_de.pdf",
+)
+search_annex1_war_materiel_tool = search_corpus(
+    "search_war_materiel",
+    "Searches KMV Annex 1 (war materiel) and returns matching passages.",
+    collection=LEGISLATION,
+    file_name="KMV_SR-514.511_2026-07-01_de.pdf",
+)
+
 
 def get_ekn_description_tool(
     ekn: str,
@@ -107,7 +137,7 @@ class AgentDependencies:
 classifier_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
-    tools=[Tool(search_legislation_tool), Tool(search_control_lists_tool), Tool(get_ekn_description_tool)],
+    tools=[search_legislation_tool, search_control_lists_tool, Tool(get_ekn_description_tool)],
     output_type=AdviseClassificationResponse,
     instructions="""
 You are the item-classification component of an export-control advisory system.
@@ -122,7 +152,7 @@ KMV Annex 1 (KMV_SR-514.511) describes war materiel. To search this annex, use t
 
 GKV Annex 3 (GKV_Anhang-3_besondere-militaerische-gueter) describes special military equipment. To search this annex, use the `search_legislation` tool.
 
-GKV Annex 1 and 2 (GKV_Anhang-1-2_dual-use) are control lists that describe dual use goods (military or civil). To search this annex, use the `search_ordinances` tool.
+GKV Annex 1 and 2 (GKV_Anhang-1-2_dual-use) are control lists that describe dual use goods (military or civil). To search this annex, use the `search_control_lists` tool.
 
 If you don't find the item in your corpus, it is not controlled.
 
@@ -180,7 +210,7 @@ log.info(f"COUNTRY CODES: {country_codes}")
 transaction_agent = Agent(
     build_model(),
     deps_type=AgentDependencies,
-    tools=[Tool(search_legislation_tool)],
+    tools=[search_legislation_tool],
     output_type=AdviseTransactionResponse,
     instructions=f"""
 You assess the given transaction using all the information you received.
@@ -252,18 +282,12 @@ class OutputTypeBool:
     citations: list[str]
     # TODO: citations
 
-# TODO: should use extracted list only: KMV_SR-514.511_2026-07-01_de_liste-kriegsmaterials.pdf
-def search_special_military_tool(query_text: str):
-    return mk_search_legislation_tool("GKV_Anhang-3_besondere-militaerische-gueter_2025-02-01_de.pdf")(query_text)
-def search_war_materiel_tool(query_text: str):
-    return mk_search_legislation_tool("KMV_SR-514.511_2026-07-01_de.pdf")(query_text)
-
 def run_subagents(prompt: str):
     dual_use_agent = Agent(
         build_model(),
         name="dual_use_agent",
         description="Determines whether a good falls under dual use classification regime or not.",
-        tools=[Tool(search_control_lists_tool), Tool(get_ekn_description_tool)],
+        tools=[search_control_lists_tool, Tool(get_ekn_description_tool)],
         output_type=OutputTypeBool,
         instructions="""
         Your tools only search sources that contain dual use goods. If your sources describe the good as dual use, it is. Otherwise it is not.
@@ -275,7 +299,7 @@ def run_subagents(prompt: str):
         build_model(),
         name="military_use_agent",
         description="Determines whether a good falls under military classification regime or not.",
-        tools=[Tool(search_special_military_tool)],
+        tools=[search_annex3_special_military_tool],
         output_type=OutputTypeBool,
         instructions="""
         Your tools only search sources that contain special military use goods. If your sources describe the good as special military, it is. Otherwise it is not.
@@ -287,7 +311,7 @@ def run_subagents(prompt: str):
         build_model(),
         name="war_materiel_agent",
         description="Determines whether a good falls under war materiel classification regime or not.",
-        tools=[Tool(search_war_materiel_tool)],
+        tools=[search_annex1_war_materiel_tool],
         output_type=OutputTypeBool,
         instructions="""
         Your tools only search sources that contain war materiel goods. If your sources describe the good as war materiel, it is. Otherwise it is not.

@@ -26,6 +26,7 @@ DATA_FILE = Path(__file__).resolve().parents[1] / "selected_item_requests_respon
 
 # `regime: "none"` in the item files maps to the `not_controlled` output literal.
 REGIME_NOT_CONTROLLED = "not_controlled"
+REGIME_SPECIFIC_MILITARY = "specific_military"
 
 
 def _prompt(item: dict[str, Any]) -> str:
@@ -46,36 +47,55 @@ def _regime(regime: str | None) -> str:
     return regime if regime and regime != "none" else REGIME_NOT_CONTROLLED
 
 
-def _entries() -> list[pytest.ParamSpec]:
-    """One case per extracted entry: item-level entries plus full advice cases."""
-    cases: list[pytest.ParamSpec] = []
+def _entries() -> list[tuple[str, str, str]]:
+    """One (prompt, expected regime, id) per extracted entry: item entries plus advice cases."""
+    cases: list[tuple[str, str, str]] = []
     for entry in json.loads(DATA_FILE.read_text())["items"]:
         item_id = entry["id"]
         for item_entry in entry["item_entries"]:
             cases.append(
-                pytest.param(
+                (
                     _prompt(item_entry["request"]["item"]),
                     _regime(item_entry["expected_classification"]["regime"]),
-                    id=f"{item_id}-items",
+                    f"{item_id}-items",
                 )
             )
         for case in entry["advice_cases"]:
             classification = case["response"].get("classification") or {}
             cases.append(
-                pytest.param(
+                (
                     _prompt(case["request"]["item"]),
                     _regime(classification.get("regime")),
-                    id=f"{item_id}-{case['case_id']}",
+                    f"{item_id}-{case['case_id']}",
                 )
             )
     return cases
 
 
-CASES = _entries()
+ENTRIES = _entries()
+CASES = [pytest.param(prompt, regime, id=id) for prompt, regime, id in ENTRIES]
+MILITARY_CASES = [
+    pytest.param(prompt, regime, id=id)
+    for prompt, regime, id in ENTRIES
+    if regime == REGIME_SPECIFIC_MILITARY
+]
 
 
 @pytest.mark.parametrize("prompt,expected_regime", CASES)
 def test_subagents_classify_selected_items(prompt: str, expected_regime: str) -> None:
+    """The orchestrator must reach the ground-truth regime for every selected item."""
+    result = run_subagents(prompt)
+    got = str(getattr(result.output, "classification", result.output))
+
+    print(f"\nprompt:\n{prompt}\n")
+    print(f"expected: {expected_regime}\nRESULT: {result.output}")
+
+    assert got == expected_regime, f"expected {expected_regime}, got {got}: {result.output.reason}"
+    assert str(getattr(result.output, "reason", "")).strip()
+
+
+@pytest.mark.parametrize("prompt,expected_regime", MILITARY_CASES)
+def test_subagents_classify_selected_military_items(prompt: str, expected_regime: str) -> None:
     """The orchestrator must reach the ground-truth regime for every selected item."""
     result = run_subagents(prompt)
     got = str(getattr(result.output, "classification", result.output))
