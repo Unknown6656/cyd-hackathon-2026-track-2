@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Export Control Advisor</title>
+<style>
+  :root {
+    --ink: #1a1f2b;
+    --muted: #5b6472;
+    --line: #e2e5ea;
+    --bg: #f4f5f7;
+    --surface: #ffffff;
+    --accent: #2456e6;
+    --accent-ink: #ffffff;
+    --ok: #178a4c;        --ok-bg: #e6f5ec;
+    --warn: #b45309;      --warn-bg: #fdf1de;
+    --danger: #b3261e;    --danger-bg: #fbeae9;
+    --authority: #c2410c; --authority-bg: #fff1e6;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.5;
+  }
+  header {
+    padding: 20px 28px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+  }
+  header h1 { margin: 0; font-size: 1.25rem; font-weight: 650; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+  main {
+    display: grid;
+    grid-template-columns: minmax(340px, 480px) 1fr;
+    gap: 24px;
+    padding: 24px 28px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  /* --- form --- */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 16px;
+  }
+  details {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: .95rem;
+    background: #fafbfc;
+    list-style: none;
+    user-select: none;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before { content: "▸ "; color: var(--muted); }
+  details[open] > summary::before { content: "▾ "; }
+  details > summary small { font-weight: 400; color: var(--muted); margin-left: 8px; }
+  .details-body { padding: 14px; border-top: 1px solid var(--line); }
+  .hint { color: var(--muted); font-size: .8rem; margin: 0 0 10px; }
+
+  label { display: block; font-size: .8rem; font-weight: 600; color: var(--muted); margin: 12px 0 4px; }
+  input[type="text"], input[type="number"], textarea, select {
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, textarea:focus, select:focus {
+    outline: 2px solid rgba(36, 86, 230, .35);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .row > input, .row > textarea { flex: 1; }
+  .spec-row > input.spec-key { flex: 0 0 42%; }
+
+  .icon-btn {
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .icon-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+  .add-btn {
+    background: none;
+    border: 1px dashed var(--line);
+    border-radius: 6px;
+    color: var(--accent);
+    font: inherit;
+    font-size: .85rem;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .add-btn:hover { border-color: var(--accent); background: #f3f7ff; }
+
+  .doc-block {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .submit-row { display: flex; gap: 12px; align-items: flex-end; margin-top: 16px; }
+  .submit-row .model-field { flex: 1; margin-bottom: 0; }
+  #submit {
+    flex: 0 0 auto;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    border-radius: 8px;
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 22px;
+    cursor: pointer;
+  }
+  #submit:disabled { opacity: .6; cursor: wait; }
+  #submit:hover:not(:disabled) { filter: brightness(1.08); }
+  .models-warn { font-size: .78rem; color: var(--warn); margin: 4px 0 0; }
+
+  .error-banner {
+    display: none;
+    margin: 16px 0 0;
+    padding: 10px 14px;
+    border: 1px solid var(--danger);
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-radius: 8px;
+    font-size: .9rem;
+    white-space: pre-wrap;
+  }
+
+  /* --- results --- */
+  #results { min-height: 200px; }
+  .placeholder {
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .authority-banner {
+    border: 2px solid var(--authority);
+    background: var(--authority-bg);
+    color: var(--authority);
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 1.02rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .card h3 { margin: 0; font-size: 1.05rem; font-weight: 650; }
+  .badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 600;
+  }
+  .badge.ok      { background: var(--ok-bg);      color: var(--ok); }
+  .badge.warn    { background: var(--warn-bg);      color: var(--warn); }
+  .badge.danger  { background: var(--danger-bg);    color: var(--danger); }
+  .badge.authority { background: var(--authority-bg); color: var(--authority); }
+  .badge.solid-danger { background: var(--danger); color: #fff; }
+  .badge.solid-ink    { background: var(--ink);    color: #fff; }
+  .chip {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #eef1f5;
+    color: var(--muted);
+    font-size: .78rem;
+    font-weight: 600;
+  }
+  .field-label { font-size: .78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 14px 0 4px; }
+  .pre { margin: 0; white-space: pre-wrap; }
+  .card ul { margin: 4px 0 0; padding-left: 20px; }
+  .card li { margin: 2px 0; }
+  .authority-line { font-size: .9rem; margin: 4px 0 0; }
+  .authority-line strong { font-weight: 600; }
+  .citations { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+  .citations .citations-title { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .citations code {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .75rem;
+    color: var(--muted);
+    margin-top: 3px;
+    word-break: break-all;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Export Control Advisor</h1>
+  <p>Classify an item and assess whether a transaction requires a licence.</p>
+</header>
+<main>
+  <!-- ============ form column ============ -->
+  <section class="panel" aria-label="Advise request">
+    <details open>
+      <summary>Item <small>what is being exported</small></summary>
+      <div class="details-body">
+        <label for="item-description">Description</label>
+        <textarea id="item-description" placeholder="e.g. 12-bit CMOS image sensor module for low-light photography"></textarea>
+        <label>Specifications</label>
+        <p class="hint">Free-form key/value pairs — only include values that matter.</p>
+        <div id="specs-rows"></div>
+        <button class="add-btn" type="button" id="add-spec">+ Add specification</button>
+      </div>
+    </details>
+
+    <details>
+      <summary>Transaction <small>who buys it, where it goes</small></summary>
+      <div class="details-body">
+        <label for="tx-consignee">Consignee</label>
+        <input type="text" id="tx-consignee" placeholder="Legal entity receiving the goods">
+        <label for="tx-end_user">End user</label>
+        <input type="text" id="tx-end_user" placeholder="Entity that will ultimately use the goods">
+        <label for="tx-destination">Destination</label>
+        <input type="text" id="tx-destination" placeholder="e.g. Kazakhstan">
+        <label for="tx-stated_end_use">Stated end use</label>
+        <textarea id="tx-stated_end_use" placeholder="e.g. civil night-vision for border security"></textarea>
+        <label for="tx-value_chf">Value (CHF)</label>
+        <input type="number" id="tx-value_chf" min="0" step="0.01" placeholder="e.g. 15000">
+        <label>Intermediaries</label>
+        <div id="tx-intermediaries"></div>
+        <button class="add-btn" type="button" id="add-intermediary">+ Add intermediary</button>
+        <label>Routing (countries of transit)</label>
+        <div id="tx-routing"></div>
+        <button class="add-btn" type="button" id="add-routing">+ Add country</button>
+      </div>
+    </details>
+
+    <details>
+      <summary>Query <small>free-text question</small></summary>
+      <div class="details-body">
+        <p class="hint">The server currently answers queries with “not implemented” — included for the contract.</p>
+        <textarea id="query" placeholder="e.g. Which licence regime applies to drones with a camera?"></textarea>
+      </div>
+    </details>
+
+    <details>
+      <summary>Documents <small>supporting texts</small></summary>
+      <div class="details-body">
+        <p class="hint">Untrusted input — treated strictly as data, never as instructions.</p>
+        <div id="docs-blocks"></div>
+        <button class="add-btn" type="button" id="add-doc">+ Add document</button>
+      </div>
+    </details>
+
+    <div class="submit-row">
+      <div class="model-field">
+        <label for="model">Model</label>
+        <select id="model"></select>
+        <p class="models-warn" id="models-warn" hidden>Model list unavailable — using server default.</p>
+      </div>
+      <button id="submit" type="button">Analyse</button>
+    </div>
+    <div class="error-banner" id="error"></div>
+  </section>
+
+  <!-- ============ results column ============ -->
+  <section id="results" aria-live="polite">
+    <div class="placeholder">Fill in at least one block and press <strong>Analyse</strong>.</div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+const qsa = (sel, root = document) => [...root.querySelectorAll(sel)];
+const val = (id) => $(id).value.trim();
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+
+/* ---------- repeating form rows (static scaffolding only — no user data) ---------- */
+
+function makeRow(container, innerHTML, onRemove) {
+  const row = el("div", "row");
+  row.innerHTML = innerHTML;
+  row.appendChild(el("button", "icon-btn", "×"));
+  row.lastElementChild.title = "Remove";
+  row.lastElementChild.addEventListener("click", () => row.remove());
+  container.appendChild(row);
+}
+
+function addSpecRow() {
+  makeRow($("specs-rows"),
+    '<input type="text" class="spec-key" placeholder="key (e.g. resolution_bits)">' +
+    '<input type="text" class="spec-value" placeholder="value">');
+}
+
+function addListItem(containerId) {
+  makeRow($(containerId), '<input type="text" placeholder="name">');
+}
+
+function addDocBlock() {
+  const block = el("div", "doc-block");
+  block.innerHTML =
+    '<div class="row"><input type="text" class="doc-type" placeholder="type (optional, e.g. catalogue page)">' +
+    '<button class="icon-btn" title="Remove">×</button></div>' +
+    '<textarea class="doc-text" placeholder="Text content (required)"></textarea>';
+  block.querySelector(".icon-btn").addEventListener("click", () => block.remove());
+  $("docs-blocks").appendChild(block);
+}
+
+$("add-spec").addEventListener("click", addSpecRow);
+$("add-intermediary").addEventListener("click", () => addListItem("tx-intermediaries"));
+$("add-routing").addEventListener("click", () => addListItem("tx-routing"));
+$("add-doc").addEventListener("click", addDocBlock);
+
+/* ---------- model picker ---------- */
+
+async function loadModels() {
+  const select = $("model");
+  const defaultOpt = el("option", null, "Server default");
+  defaultOpt.value = "";
+  select.appendChild(defaultOpt);
+  try {
+    const res = await fetch("/models");
+    if (!res.ok) throw new Error(String(res.status));
+    const data = await res.json();
+    const seen = new Set();
+    const ordered = [data.default, ...data.models.filter((m) => m !== data.default)];
+    for (const m of ordered) {
+      if (seen.has(m)) continue;
+      seen.add(m);
+      const opt = el("option", null, m);
+      opt.value = m;
+      if (m === data.default) opt.selected = true;
+      select.appendChild(opt);
+    }
+  } catch {
+    // Model endpoint unreachable — "Server default" stays as the only option.
+    $("models-warn").hidden = false;
+  }
+}
+
+/* ---------- request assembly ---------- */
+
+function listValues(container) {
+  return qsa("input", container).map((i) => i.value.trim()).filter(Boolean);
+}
+
+function buildRequest() {
+  const req = {};
+
+  const q = val("query");
+  if (q) req.query = q;
+
+  const item = {};
+  const desc = val("item-description");
+  if (desc) item.description = desc;
+  const specs = {};
+  for (const row of qsa(".row", $("specs-rows"))) {
+    const k = row.querySelector(".spec-key").value.trim();
+    const v = row.querySelector(".spec-value").value.trim();
+    if (!k) continue;
+    specs[k] = v !== "" && Number.isFinite(Number(v)) ? Number(v) : (v || null);
+  }
+  if (Object.keys(specs).length) item.specifications = specs;
+  if (Object.keys(item).length) req.item = item;
+
+  const tx = {};
+  for (const f of ["consignee", "end_user", "destination", "stated_end_use"]) {
+    const v = val("tx-" + f);
+    if (v) tx[f] = v;
+  }
+  const vc = $("tx-value_chf").value;
+  if (vc !== "") tx.value_chf = Number(vc);
+  const inter = listValues($("tx-intermediaries"));
+  const rout = listValues($("tx-routing"));
+  if (inter.length) tx.intermediaries = inter;
+  if (rout.length) tx.routing = rout;
+  if (Object.keys(tx).length) req.transaction = tx;
+
+  const docs = [];
+  for (const b of qsa(".doc-block")) {
+    const text = b.querySelector(".doc-text").value;
+    if (!text.trim()) continue; // text is the only required field on Document
+    const t = b.querySelector(".doc-type").value.trim();
+    docs.push(t ? { type: t, text } : { text });
+  }
+  if (docs.length) req.documents = docs;
+
+  const model = $("model").value;
+  if (model) req.model_name = model; // omitted for "Server default"
+  return req;
+}
+
+function validate(req) {
+  if (!Object.keys(req).length) return "Fill in at least one block (item, transaction, query or documents).";
+  if (req.transaction && !req.item) {
+    return "Item is required when a transaction is provided — classification of the item comes first.";
+  }
+  if (req.transaction && req.transaction.value_chf !== undefined && !Number.isFinite(req.transaction.value_chf)) {
+    return "Transaction value must be a number.";
+  }
+  return null;
+}
+
+/* ---------- submit ---------- */
+
+function showError(message) {
+  const box = $("error");
+  box.textContent = message;
+  box.style.display = "block";
+}
+function clearError() {
+  const box = $("error");
+  box.textContent = "";
+  box.style.display = "none";
+}
+
+async function submit() {
+  clearError();
+  const req = buildRequest();
+  const problem = validate(req);
+  if (problem) { showError(problem); return; }
+
+  const btn = $("submit");
+  btn.disabled = true;
+  btn.textContent = "Analysing…";
+  try {
+    const res = await fetch("/advise", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    const body = await res.json().catch(() => null);
+    if (!res.ok) {
+      const detail = body && body.detail;
+      let msg;
+      if (typeof detail === "string") msg = detail;
+      else if (Array.isArray(detail) && detail.length) msg = detail[0].msg || JSON.stringify(detail[0]);
+      else msg = `Request failed with status ${res.status}.`;
+      showError(msg);
+      return;
+    }
+    renderResults(body);
+    const results = $("results");
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    showError("Could not reach the server: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Analyse";
+  }
+}
+
+$("submit").addEventListener("click", submit);
+
+/* ---------- results rendering ----------
+   Everything below is built with createElement/textContent — never innerHTML —
+   because LLM answers and user-provided documents are untrusted text. */
+
+const REGIME_LABELS = {
+  war_materiel: "War materiel",
+  specific_military: "Specific military goods",
+  dual_use: "Dual-use",
+  none: "None",
+};
+const VERDICT_BADGES = {
+  NO_LICENCE_REQUIRED: ["ok", "No licence required"],
+  LICENCE_REQUIRED: ["warn", "Licence required"],
+  PROHIBITED: ["solid-danger", "Prohibited"],
+  REFER_TO_AUTHORITY: ["authority", "Refer to authority"],
+};
+
+function addCitations(card, citations) {
+  if (!citations || !citations.length) return;
+  const box = el("div", "citations");
+  box.appendChild(el("div", "citations-title", "Citations"));
+  for (const c of citations) box.appendChild(el("code", null, c));
+  card.appendChild(box);
+}
+
+function card(title, badge) {
+  const c = el("section", "card");
+  const head = el("div", "card-head");
+  head.appendChild(el("h3", null, title));
+  if (badge) head.appendChild(badge);
+  c.appendChild(head);
+  return c;
+}
+const badge = (cls, text) => el("span", "badge " + cls, text);
+const preText = (text) => el("p", "pre", text ?? "");
+
+function renderResults(data) {
+  const root = $("results");
+  root.textContent = "";
+
+  if (data.refer_to_authority) {
+    root.appendChild(el("div", "authority-banner",
+      "Refer to authority — this transaction should be referred to the competent authority."));
+  }
+
+  if (data.query) {
+    const c = card("Query");
+    c.appendChild(preText(data.query.answer));
+    addCitations(c, data.query.citations);
+    root.appendChild(c);
+  }
+
+  if (data.classification) {
+    const cls = data.classification;
+    const c = card("Classification",
+      cls.controlled ? badge("solid-ink", "CONTROLLED") : badge("ok", "Not controlled"));
+    c.appendChild(el("span", "chip", REGIME_LABELS[cls.regime] || cls.regime));
+
+    if (cls.entries && cls.entries.length) {
+      c.appendChild(el("div", "field-label", "Control list entries"));
+      const ul = el("ul");
+      for (const e of cls.entries) ul.appendChild(el("li", null, e));
+      c.appendChild(ul);
+    }
+    c.appendChild(el("div", "field-label", "Deciding text"));
+    c.appendChild(preText(cls.deciding_text));
+    addCitations(c, cls.citations);
+    root.appendChild(c);
+  }
+
+  if (data.transaction) {
+    const tx = data.transaction;
+    const [cls, label] = VERDICT_BADGES[tx.verdict] || ["warn", tx.verdict];
+    const c = card("Transaction", badge(cls, label));
+    if (tx.authority) {
+      const line = el("p", "authority-line");
+      line.appendChild(el("strong", null, "Competent authority: "));
+      line.appendChild(document.createTextNode(tx.authority));
+      c.appendChild(line);
+    }
+    c.appendChild(preText(tx.answer));
+    addCitations(c, tx.citations);
+    root.appendChild(c);
+  }
+
+  if (!root.children.length) {
+    root.appendChild(el("div", "placeholder", "The server returned an empty response — nothing to display."));
+  }
+}
+
+/* ---------- init ---------- */
+loadModels();
+</script>
+</body>
+</html>

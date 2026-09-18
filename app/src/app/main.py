@@ -8,6 +8,7 @@ from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 
 from .backend import get_classification, get_transaction_assessment
 from .config import settings
@@ -15,6 +16,14 @@ from .ingest import run_embed, run_parse
 from .models import *
 
 app = FastAPI(title="Track 2 export control advisor")
+
+_STATIC_INDEX = Path(__file__).resolve().parent.parent.parent / "static" / "index.html"
+
+
+@app.get("/", response_class=HTMLResponse)
+def index() -> str:
+    """Serve the single-page advise UI."""
+    return _STATIC_INDEX.read_text(encoding="utf-8")
 
 
 _MODELS_TTL_SECONDS = 300
