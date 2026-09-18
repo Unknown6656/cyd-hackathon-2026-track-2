@@ -7,7 +7,7 @@ nothing outside `presentation/` should be touched for this purpose.
 
 | File | What it is |
 |---|---|
-| `template/index.html` | The deck (reveal.js, self-contained, no external assets) — open in a browser |
+| `index.html` | The deck (reveal.js, self-contained, no external assets) — open in a browser |
 | `outline.md` | Slide-by-slide description of the current deck (source of truth) |
 | `facts.md` | Verified numbers and facts used on slides (corpus size, test suites, stack, etc.) |
 | `architecture.mmd` | Mermaid diagrams (system + request lifecycle), updated to match the **current** code |
@@ -17,7 +17,7 @@ nothing outside `presentation/` should be touched for this purpose.
 ## Status
 
 - [x] Codebase reviewed (main @ `7273d44`)
-- [x] Deck built in `template/` (10 slides, no speaker notes) — see `outline.md`
+- [x] Deck built as `index.html` (10 slides, no speaker notes) — see `outline.md`
 - [x] Model name: Qwen/Qwen3.8-Flash-Next (per request)
 - [ ] (Optional) Run the test suite against the deployed endpoint and keep the numbers ready for Q&A; save output to `results/`
 - [ ] Update `doc/ARCHITECTURE.md` in the repo — it is **out of date** (see `gaps-and-qa.md`)

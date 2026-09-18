@@ -330,34 +330,48 @@
                     <h2>Export Control <span class="accent">Advisor</span></h2>
                     <h3 style="font-size:0.9em">Grounded legal advice for Swiss export compliance</h3>
                     <p class="dim" style="margin-top:1.4em">
-                        <span class="small">unknown6656 &middot; bouncypurple &middot; valardomate &middot; timoll &middot; kristina-hardi</span>
+                        <span class="small">
+                            unknown6656 &nbsp;&middot;&nbsp;
+                            bouncypurple &nbsp;&middot;&nbsp;
+                            valardomate &nbsp;&middot;&nbsp;
+                            timoll &nbsp;&middot;&nbsp;
+                            kristina-hardi
+                        </span>
                     </p>
                 </section>
 
                 <!-- 2. The problem -->
                 <section>
                     <p class="kicker">The problem</p>
-                    <h2>The compliance problem</h2>
+                    <h2>The problem statement</h2>
                     <div class="cols">
                         <div>
                             <ul class="small">
-                                <li>Swiss <b>optronics manufacturer</b> &mdash; one <b>detector core</b>, many products</li>
+                                <li class="accent">Create an export control compliance advisor.</li>
+                                <li>Judge the permissibility of export transactions based on:</li>
+                                <ul>
+                                    <li>the <b class="accent">product type / specs</b></li>
+                                    <li>the <b class="accent">transaction</b></li>
+                                    <li>the <b class="accent">destination / counterparty</b></li>
+                                    <li>the <b class="accent">end use</b></li>
+                                </ul>
                                 <li>Product use decides the law:</li>
                                 <ul>
-                                    <li><b>War materiel</b> &mdash; War Material Act (KMG/KMV), licensed by the Confederation</li>
-                                    <li><b>Dual-use goods</b> &mdash; Goods Control Act (GKG/GKV), licensed by SECO</li>
-                                    <li><b>Specific military items</b> &mdash; GKV Annex 3</li>
-                                    <li><b>Not controlled</b> &mdash; industrial cameras, civil use</li>
+                                    <li><b class="accent">War materiel</b> &mdash; War Material Act (KMG/KMV)</li>
+                                    <li><b class="accent">Dual-use goods</b> &mdash; Goods Control Act (GKG/GKV), approval by SECO</li>
+                                    <li><b class="accent">Specific military items</b> &mdash; GKV Annex 3</li>
+                                    <li><b class="accent">Not controlled</b> &mdash; industrial cameras, civil use</li>
                                 </ul>
-                                <li>Small <b>compliance desk</b> clears every order &mdash; manually</li>
                             </ul>
                         </div>
                         <div class="narrow">
                             <div class="card">
-                                <h4>Why an AI advisor is hard here</h4>
+                                <h4>Difficulties of creating an AI advisor</h4>
                                 <ul class="small" style="margin-top:0">
-                                    <li><span class="accent">Grounded citations</span> &mdash; no model memory</li>
-                                    <li><b>Confidential watchlist</b> &mdash; never disclosed</li>
+                                    <li><b>Complex laws with many dependencies</b></li>
+                                    <li><b>Complex decision tree for classifying items (600+ pages)</b></li>
+                                    <li><b>Grounded citations - no model memory</b></li>
+                                    <li><b>Confidential watchlist, which should never be disclosed/leaked</b></li>
                                     <li><b>No circumvention assistance</b></li>
                                 </ul>
                             </div>
@@ -365,10 +379,37 @@
                     </div>
                 </section>
 
-                <!-- 3. What we built -->
+                <!-- 3. Architecture -->
                 <section>
                     <p class="kicker">The solution</p>
-                    <h2>System overview</h2>
+                    <h2>Architecture</h2>
+                    <div class="arch2" style="max-width:90%; margin:0 auto">
+                        <div class="arow">
+                            <div class="abox hl"><b>FastAPI</b><code>HTTP POST /advise</code></div>
+                        </div>
+                        <div class="adown">&darr;</div>
+                        <div class="agroup">
+                            <span class="alabel">Agents</span>
+                            <div class="arow">
+                                <div class="abox"><b>Classifier</b>regime + entry</div>
+                                <div class="abox"><b>Transaction</b>licensing verdict</div>
+                                <div class="abox"><b>Diversion</b>flagged? <code>bool</code></div>
+                                <div class="abox"><b>Sanctions</b>public sanctions list?<code>bool</code></div>
+                            </div>
+                        </div>
+                        <div class="adown">&darr;</div>
+                        <div class="arow">
+                            <div class="abox"><b>Qdrant</b>control_lists &middot; legislation<em>cosine search + EKN payload filter</em></div>
+                            <div class="abox"><b>LLM</b>Qwen/Qwen3.8-Flash-Next<em>LiteLLM proxy &middot; qwen3-embedding:8b</em></div>
+                        </div>
+                        <p class="tiny dim" style="text-align:center; margin-top:0.4em">Agent runs &amp; tool calls traced with <b>OpenTelemetry</b></p>
+                    </div>
+                </section>
+
+                <!-- 4. Agents overview -->
+                <section>
+                    <p class="kicker">The solution</p>
+                    <h2>Architecture &mdash; Agents overview</h2>
                     <table>
                         <tr>
                             <th>Agent</th>
@@ -387,43 +428,17 @@
                         </tr>
                         <tr>
                             <td><b>Diversion</b></td>
-                            <td>Counterparty flagged? <code>bool</code></td>
+                            <td>Check if counterparty flagged</td>
                             <td>Confidential internal list (12 entities) &mdash; prompt-only, one-bit output</td>
                         </tr>
                         <tr>
-                            <td><b>Public sanctions</b></td>
-                            <td>Fallback screen, <code>bool</code></td>
+                            <td><b>Sanctions</b></td>
+                            <td>Check if on a sanctions list</td>
                             <td>Public sanctions list</td>
                         </tr>
                     </table>
                 </section>
 
-                <!-- 4. Architecture -->
-                <section>
-                    <p class="kicker">The solution</p>
-                    <h2>Architecture</h2>
-                    <div class="arch2" style="max-width:90%; margin:0 auto">
-                        <div class="arow">
-                            <div class="abox hl"><b>FastAPI</b><code>POST /advise</code> :8080</div>
-                        </div>
-                        <div class="adown">&darr;</div>
-                        <div class="agroup">
-                            <span class="alabel">Agents</span>
-                            <div class="arow">
-                                <div class="abox"><b>Classifier</b>regime + entry</div>
-                                <div class="abox"><b>Transaction</b>licensing verdict</div>
-                                <div class="abox"><b>Diversion</b>flagged? <code>bool</code></div>
-                                <div class="abox"><b>Sanctions</b>public list <code>bool</code></div>
-                            </div>
-                        </div>
-                        <div class="adown">&darr;</div>
-                        <div class="arow">
-                            <div class="abox"><b>Qdrant</b>control_lists &middot; legislation<em>cosine search + EKN payload filter</em></div>
-                            <div class="abox"><b>LLM</b>Qwen/Qwen3.8-Flash-Next<em>LiteLLM proxy &middot; qwen3-embedding:8b</em></div>
-                        </div>
-                        <p class="tiny dim" style="text-align:center; margin-top:0.4em">Agent runs &amp; tool calls traced with <b>OpenTelemetry</b></p>
-                    </div>
-                </section>
 
                 <!-- 5. Grounding: ingestion -->
                 <section>
@@ -442,7 +457,7 @@
                     </div>
                     <ul class="small">
                         <li><b>Two retrieval modes:</b> semantic search to <i>find</i> + payload filter to <i>quote</i> &mdash; citations verbatim, never re-typed</li>
-                        <li><b>Multi-page entries</b> (<code>(Fortsetzung)</code>) grouped before embedding</li>
+                        <li><b>Multi-page entries</b> grouped before embedding</li>
                         <li><b>German text</b> = authoritative; LLM layer handles user language</li>
                     </ul>
                 </section>

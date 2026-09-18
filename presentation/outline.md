@@ -1,4 +1,4 @@
-# Deck outline — matches `template/index.html` (final state)
+# Deck outline — matches `index.html` (final state)
 
 10 slides, reveal.js. No speaker notes in the deck (removed).
 This file is the source of truth for what is on each slide.
