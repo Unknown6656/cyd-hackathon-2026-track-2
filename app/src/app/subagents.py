@@ -8,10 +8,8 @@ from pathlib import Path
 import textwrap
 from typing import Literal
 
-from pydantic_ai import Agent, RunContext, Tool, UsageLimits
+from pydantic_ai import Agent, Tool, UsageLimits
 from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openai import OpenAIProvider
-from pydantic_ai.profiles.openai import OpenAIModelProfile
 from pydantic_ai_harness import SubAgent, SubAgents
 
 from .config import Settings
@@ -20,6 +18,7 @@ from .tools import (
     get_ekn_description,
     semantic_search,
 )
+from .agents import build_model
 
 config = Settings()
 
@@ -107,17 +106,6 @@ def get_ekn_description_tool(
 ###########################################################
 # Agents
 ###########################################################
-def build_model(model_name: str | None = None) -> OpenAIChatModel:
-    """Build an OpenAI-compatible model from the application settings."""
-    provider = OpenAIProvider(
-        base_url=config.openai_base_url,
-        api_key=config.openai_api_key,
-    )
-    profile = OpenAIModelProfile(
-        openai_chat_supports_multiple_system_messages=False,
-    )
-    return OpenAIChatModel(model_name or config.model, provider=provider, profile=profile)
-
 
 @dataclass
 class AgentDependencies:
@@ -282,9 +270,9 @@ class OutputTypeBool:
     citations: list[str]
     # TODO: citations
 
-def run_subagents(prompt: str):
+async def run_subagents(prompt: str, model: OpenAIChatModel | None = None):
     dual_use_agent = Agent(
-        build_model(),
+        model or build_model(),
         name="dual_use_agent",
         description="Determines whether a good falls under dual use classification regime or not.",
         tools=[search_control_lists_tool, Tool(get_ekn_description_tool)],
@@ -296,7 +284,7 @@ def run_subagents(prompt: str):
         """,
     )
     military_agent = Agent(
-        build_model(),
+        model or build_model(),
         name="military_use_agent",
         description="Determines whether a good falls under military classification regime or not.",
         tools=[search_annex3_special_military_tool],
@@ -308,7 +296,7 @@ def run_subagents(prompt: str):
         """,
     )
     war_materiel_agent = Agent(
-        build_model(),
+        model or build_model(),
         name="war_materiel_agent",
         description="Determines whether a good falls under war materiel classification regime or not.",
         tools=[search_annex1_war_materiel_tool],
@@ -322,7 +310,7 @@ def run_subagents(prompt: str):
 
     # We use subagents to keep main agent context clean from retrieved source document passages.
     orchestrator = Agent(
-        build_model(),
+        model or build_model(),
         capabilities=[
             SubAgents(
                 agents=[
@@ -332,7 +320,7 @@ def run_subagents(prompt: str):
                 ]
             )
         ],
-        output_type=OutputType,
+        output_type=AdviseClassificationResponse,
         instructions=textwrap.dedent("""
         Your task is to classify a given good into one of the available regimes.
 
@@ -342,5 +330,5 @@ def run_subagents(prompt: str):
         Call all three subagents in paralell.
         """)
     )
-    result = orchestrator.run_sync(prompt)
+    result = await orchestrator.run(prompt)
     return result

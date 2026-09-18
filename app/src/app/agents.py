@@ -6,9 +6,10 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from pydantic_ai import Agent, RunContext, Tool
+from pydantic_ai import Agent, Tool
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
+from pydantic_ai.profiles.openai import OpenAIModelProfile
 
 from .config import Settings
 from .models import AdviseClassificationResponse, AdviseTransactionResponse
@@ -75,7 +76,10 @@ def build_model(model_name: str | None = None) -> OpenAIChatModel:
         base_url=config.openai_base_url,
         api_key=config.openai_api_key,
     )
-    return OpenAIChatModel(model_name or config.model, provider=provider)
+    profile = OpenAIModelProfile(
+        openai_chat_supports_multiple_system_messages=False,
+    )
+    return OpenAIChatModel(model_name or config.model, provider=provider, profile=profile)
 
 
 @dataclass

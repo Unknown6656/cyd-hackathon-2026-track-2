@@ -5,11 +5,11 @@ from typing import NewType
 
 from .agents import (
     build_model,
-    classifier_agent,
     diversion_agent,
     transaction_agent,
     public_sanction_agent,
 )
+from .subagents import run_subagents
 from .models import (
     AdviseClassificationResponse,
     AdviseTransactionResponse,
@@ -42,8 +42,7 @@ async def get_classification(
 ---- End of paperwork provided by user ----"""
 
     log.debug(prompt)
-
-    result = await classifier_agent.run(prompt, model=build_model(model_name))
+    result = await run_subagents(prompt, model=build_model(model_name))
     return result.output
 
 
